@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#eef7ff">
 <title>Медослав и его друзья — Игры</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
   --bg:#f6fbff; --card:#fff; --ink:#23303a; --muted:#74838e; --line:#dce6ef;
@@ -540,8 +539,34 @@ button{font:inherit;color:inherit}
 </main>
 
 <script>
-const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();try{tg.requestFullscreen?.()}catch(e){}}
+let tg=null;
+
+function initTelegramWebApp(){
+  tg=window.Telegram?.WebApp || null;
+  if(tg){
+    try{tg.ready()}catch(e){}
+    try{tg.expand()}catch(e){}
+    try{tg.requestFullscreen?.()}catch(e){}
+  }
+}
+
+// Интерфейс Mini App запускается сразу, не ожидая внешний Telegram SDK.
+initTelegramWebApp();
+
+// SDK подключаем неблокирующе после того, как страница уже показана.
+setTimeout(()=>{
+  if(window.Telegram?.WebApp){
+    initTelegramWebApp();
+    return;
+  }
+
+  const sdk=document.createElement('script');
+  sdk.src='https://telegram.org/js/telegram-web-app.js?63';
+  sdk.async=true;
+  sdk.onload=initTelegramWebApp;
+  sdk.onerror=()=>console.warn('Telegram WebApp SDK не загрузился, интерфейс продолжает работать.');
+  document.head.appendChild(sdk);
+},0);
 const screens=[...document.querySelectorAll('.screen')], pageTitle=document.getElementById('pagetitle');
 function show(id){
   if(typeof cleanupPuzzleDrag==='function') cleanupPuzzleDrag();
