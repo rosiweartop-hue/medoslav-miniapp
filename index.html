@@ -13,11 +13,27 @@
   --safeTop:env(safe-area-inset-top); --safeBottom:env(safe-area-inset-bottom);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:
-  radial-gradient(circle at 0% 0%,#fff4c8 0 20%,transparent 43%),
-  radial-gradient(circle at 100% 7%,#dff1ff 0 19%,transparent 39%),
-  linear-gradient(180deg,#eef7ff,#f9fcff 55%,#fff8df);
-  color:var(--ink)}
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--ink);
+}
+html{
+  background:#dcefd8;
+}
+body{
+  background:
+    linear-gradient(rgba(246,251,255,.24),rgba(246,251,255,.32)),
+    url("medoslav-bg.webp") center center / cover no-repeat;
+  background-attachment:fixed;
+}
+@media (max-width:700px){
+  body{
+    background-position:center top;
+    background-attachment:scroll;
+  }
+}
 button{font:inherit;color:inherit}
 .app{max-width:760px;margin:auto;min-height:100vh;padding:calc(14px + var(--safeTop)) 12px calc(24px + var(--safeBottom))}
 .screen{display:none}.screen.active{display:block}
