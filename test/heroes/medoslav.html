@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Медослав — Медослав и его друзья</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+body {
+    margin: 0;
+    background: #eef9ef;
+}
+
+.hero-page {
+    position: relative;
+    width: 100%;
+}
+
+.hero-page img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+}
+
+.hero-hotspot {
+    position: absolute;
+    display: block;
+    z-index: 10000;
+    border-radius: 30px;
+}
+
+/* НАЗАД К КАРТЕ — пока красная для настройки */
+.map-back {
+    left: 2.0%;
+    top: 9.8%;
+    width: 11.5%;
+    height: 2.9%;
+    background: transparent;
+    border: none;
+}
+
+/* ИСТОРИЯ */
+.story-button {
+    left: 8.2%;
+    top: 74.5%;
+    width: 20.2%;
+    height: 4.2%;
+    background: transparent;
+}
+
+/* ИГРА */
+.game-button {
+    left: 39.8%;
+    top: 74.5%;
+    width: 18.5%;
+    height: 4.2%;
+    background: transparent;
+}
+
+/* РАСКРАСКА */
+.coloring-button {
+    left: 70.3%;
+    top: 74.5%;
+    width: 19.8%;
+    height: 4.2%;
+    background: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero-page">
+
+<img
+    src="../images/heroes/medoslav/page.png"
+    alt="Страница Медослава"
+>
+
+<a
+    class="hero-hotspot map-back"
+    href="../index.html"
+    aria-label="Назад к карте">
+</a>
+
+<a
+    class="hero-hotspot story-button"
+    href="../stories/medoslav.html"
+    aria-label="Читать историю Медослава">
+</a>
+
+<a
+    class="hero-hotspot game-button"
+    href="../games/medoslav.html"
+    aria-label="Играть с Медославом">
+</a>
+
+<a
+    class="hero-hotspot coloring-button"
+    href="../coloring/bee.html"
+    aria-label="Раскраска Медослава">
+</a>
+
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Сияша и дорога звёзд</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.reader {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 15px;
+    text-align: center;
+}
+
+.reader h1 {
+    color: #4d381d;
+    font-size: 30px;
+}
+
+.comic-page {
+    width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.2);
+    background: white;
+}
+
+.reader-controls {
+    margin: 18px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.reader-controls button {
+    min-width: 150px;
+}
+
+.page-counter {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.back-link {
+    display: inline-block;
+    margin: 15px;
+    padding: 12px 22px;
+    border-radius: 25px;
+    background: #6b8e23;
+    color: white;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="reader">
+
+<h1>⭐ Сияша и дорога звёзд</h1>
+
+<a class="back-link" href="index.html">
+← Вернуться к историям
+</a>
+
+<img
+    id="comicPage"
+    class="comic-page"
+    src="../images/stories/siyasha/page1.png"
+    alt="Страница комикса Сияши"
+>
+
+<div class="reader-controls">
+
+<button id="prevBtn">← Назад</button>
+
+<span class="page-counter" id="counter">
+Страница 1 из 4
+</span>
+
+<button id="nextBtn">Вперёд →</button>
+
+</div>
+
+</div>
+
+<script>
+const pages = [
+    "../images/stories/siyasha/page1.png",
+    "../images/stories/siyasha/page2.png",
+    "../images/stories/siyasha/page3.png",
+    "../images/stories/siyasha/page4.png"
+];
+
+let currentPage = 0;
+
+const image = document.getElementById("comicPage");
+const counter = document.getElementById("counter");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+function showPage() {
+    image.src = pages[currentPage];
+
+    counter.textContent =
+        `Страница ${currentPage + 1} из ${pages.length}`;
+
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage === pages.length - 1;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+prevBtn.addEventListener("click", () => {
+    if (currentPage > 0) {
+        currentPage--;
+        showPage();
+    }
+});
+
+nextBtn.addEventListener("click", () => {
+    if (currentPage < pages.length - 1) {
+        currentPage++;
+        showPage();
+    }
+});
+
+let touchStartX = 0;
+
+image.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, {passive:true});
+
+image.addEventListener("touchend", e => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const distance = touchEndX - touchStartX;
+
+    if (distance < -60 && currentPage < pages.length - 1) {
+        currentPage++;
+        showPage();
+    }
+
+    if (distance > 60 && currentPage > 0) {
+        currentPage--;
+        showPage();
+    }
+}, {passive:true});
+
+showPage();
+</script>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/siyasha.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Сияше
+</a>
+
+</body>
+</html>
+

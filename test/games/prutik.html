@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Прутик — Дорога к морю</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.game-wrap{
+    max-width:900px;
+    margin:25px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.game-box{
+    background:white;
+    border-radius:25px;
+    padding:22px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.game-box h1{
+    color:#587229;
+}
+
+.info{
+    font-size:20px;
+    font-weight:bold;
+    margin:10px;
+}
+
+.message{
+    min-height:48px;
+    font-size:20px;
+    margin:12px;
+}
+
+#maze{
+    display:block;
+    width:100%;
+    max-width:720px;
+    height:auto;
+    margin:20px auto;
+    border-radius:20px;
+    background:#eaf7dc;
+    touch-action:none;
+    box-shadow:inset 0 0 0 3px #aac77a;
+}
+
+.game-btn,
+.back-btn{
+    display:inline-block;
+    border:none;
+    border-radius:28px;
+    padding:13px 25px;
+    font-size:18px;
+    margin:8px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.game-btn{
+    background:#6b8e23;
+    color:white;
+}
+
+.back-btn{
+    background:#d9a413;
+    color:white;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-wrap">
+<div class="game-box">
+
+<h1>🌳 Дорога к морю</h1>
+
+<p>
+Прутик мечтает увидеть море.<br>
+Поставь палец на Прутика и проведи его по дорожке к 🌊.<br>
+Не сходи на траву!
+</p>
+
+<div class="info">
+Уровень <span id="levelText">1</span> из 8
+</div>
+
+<div class="message" id="message">
+Поставь палец на Прутика 🌳
+</div>
+
+<canvas id="maze" width="720" height="420"></canvas>
+
+<button id="nextBtn" class="game-btn hidden">
+Следующий уровень →
+</button>
+
+<a href="index.html" class="back-btn">
+← Вернуться к играм
+</a>
+
+</div>
+</div>
+
+<script>
+const canvas = document.getElementById("maze");
+const ctx = canvas.getContext("2d");
+
+const message = document.getElementById("message");
+const levelText = document.getElementById("levelText");
+const nextBtn = document.getElementById("nextBtn");
+
+let level = 1;
+let dragging = false;
+let finished = false;
+let pointerId = null;
+
+const player = {
+    x:65,
+    y:210,
+    r:22
+};
+
+const levels = [
+
+    // 1 — простая прямая дорога
+    {
+        start:{x:65,y:210},
+        sea:{x:650,y:210},
+        path:[
+            {x:35,y:170,w:650,h:80}
+        ]
+    },
+
+    // 2
+    {
+        start:{x:65,y:210},
+        sea:{x:650,y:140},
+        path:[
+            {x:35,y:170,w:220,h:80},
+            {x:175,y:170,w:80,h:170},
+            {x:175,y:260,w:310,h:80},
+            {x:405,y:100,w:80,h:240},
+            {x:405,y:100,w:280,h:80}
+        ]
+    },
+
+    // 3
+    {
+        start:{x:65,y:340},
+        sea:{x:650,y:110},
+        path:[
+            {x:35,y:300,w:180,h:80},
+            {x:135,y:120,w:80,h:260},
+            {x:135,y:120,w:230,h:80},
+            {x:285,y:120,w:80,h:180},
+            {x:285,y:220,w:230,h:80},
+            {x:435,y:70,w:80,h:230},
+            {x:435,y:70,w:250,h:80}
+        ]
+    },
+
+    // 4
+    {
+        start:{x:65,y:335},
+        sea:{x:650,y:110},
+        path:[
+            {x:35,y:300,w:190,h:70},
+            {x:155,y:145,w:70,h:225},
+            {x:155,y:145,w:240,h:70},
+            {x:325,y:145,w:70,h:170},
+            {x:325,y:245,w:230,h:70},
+            {x:485,y:75,w:70,h:240},
+            {x:485,y:75,w:200,h:70}
+        ]
+    },
+
+    // 5
+    {
+        start:{x:65,y:342},
+        sea:{x:650,y:87},
+        path:[
+            {x:30,y:310,w:170,h:64},
+            {x:136,y:170,w:64,h:204},
+            {x:136,y:170,w:210,h:64},
+            {x:282,y:170,w:64,h:150},
+            {x:282,y:256,w:190,h:64},
+            {x:408,y:105,w:64,h:215},
+            {x:408,y:105,w:165,h:64},
+            {x:509,y:55,w:64,h:114},
+            {x:509,y:55,w:176,h:64}
+        ]
+    },
+
+    // 6
+    {
+        start:{x:65,y:95},
+        sea:{x:650,y:335},
+        path:[
+            {x:35,y:65,w:210,h:64},
+            {x:181,y:65,w:64,h:170},
+            {x:181,y:171,w:185,h:64},
+            {x:302,y:171,w:64,h:150},
+            {x:302,y:257,w:180,h:64},
+            {x:418,y:257,w:64,h:110},
+            {x:418,y:303,w:267,h:64}
+        ]
+    },
+
+    // 7
+    {
+        start:{x:65,y:335},
+        sea:{x:650,y:110},
+        path:[
+            {x:35,y:305,w:155,h:60},
+            {x:130,y:220,w:60,h:145},
+            {x:130,y:220,w:170,h:60},
+            {x:240,y:120,w:60,h:160},
+            {x:240,y:120,w:170,h:60},
+            {x:350,y:120,w:60,h:190},
+            {x:350,y:250,w:170,h:60},
+            {x:460,y:80,w:60,h:230},
+            {x:460,y:80,w:225,h:60}
+        ]
+    },
+
+    // 8 — финальный
+    {
+        start:{x:60,y:348},
+        sea:{x:650,y:98},
+        path:[
+            {x:30,y:320,w:140,h:56},
+            {x:114,y:250,w:56,h:126},
+            {x:114,y:250,w:145,h:56},
+            {x:203,y:160,w:56,h:146},
+            {x:203,y:160,w:145,h:56},
+            {x:292,y:100,w:56,h:116},
+            {x:292,y:100,w:150,h:56},
+            {x:386,y:100,w:56,h:150},
+            {x:386,y:194,w:145,h:56},
+            {x:475,y:70,w:56,h:180},
+            {x:475,y:70,w:210,h:56}
+        ]
+    }
+];
+
+function currentLevel(){
+    return levels[level - 1];
+}
+
+function pointInsidePath(x,y){
+    return currentLevel().path.some(r =>
+        x >= r.x &&
+        x <= r.x + r.w &&
+        y >= r.y &&
+        y <= r.y + r.h
+    );
+}
+
+/* Проверяем, чтобы Прутик не проходил краем через траву */
+function safePosition(x,y){
+
+    const checkRadius = 15;
+
+    const points = [
+        [x,y],
+        [x+checkRadius,y],
+        [x-checkRadius,y],
+        [x,y+checkRadius],
+        [x,y-checkRadius],
+        [x+11,y+11],
+        [x-11,y+11],
+        [x+11,y-11],
+        [x-11,y-11]
+    ];
+
+    return points.every(p => pointInsidePath(p[0],p[1]));
+}
+
+/* Не даём быстро "перепрыгнуть" через траву */
+function safeMovement(fromX,fromY,toX,toY){
+
+    const distance = Math.hypot(toX-fromX,toY-fromY);
+    const steps = Math.max(1, Math.ceil(distance / 5));
+
+    for(let i=1;i<=steps;i++){
+
+        const t = i / steps;
+
+        const x = fromX + (toX-fromX)*t;
+        const y = fromY + (toY-fromY)*t;
+
+        if(!safePosition(x,y)){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function resetPlayer(text){
+
+    const start = currentLevel().start;
+
+    player.x = start.x;
+    player.y = start.y;
+
+    dragging = false;
+    pointerId = null;
+    finished = false;
+
+    nextBtn.classList.add("hidden");
+
+    message.textContent =
+        text || "Поставь палец на Прутика 🌳";
+
+    draw();
+}
+
+function draw(){
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    /* трава */
+    ctx.fillStyle = "#d9efbf";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    /* небольшие декоративные цветы */
+    ctx.font = "22px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const decorations = [
+        [45,55,"🌼"],
+        [670,370,"🌸"],
+        [650,45,"🌼"],
+        [55,385,"🌸"]
+    ];
+
+    decorations.forEach(d=>{
+        ctx.fillText(d[2],d[0],d[1]);
+    });
+
+    /* дорожка */
+    ctx.fillStyle = "#e4c08b";
+
+    currentLevel().path.forEach(r=>{
+        ctx.fillRect(r.x,r.y,r.w,r.h);
+    });
+
+    /* море */
+    const sea = currentLevel().sea;
+
+    ctx.beginPath();
+    ctx.arc(sea.x,sea.y,39,0,Math.PI*2);
+    ctx.fillStyle = "#78c9ef";
+    ctx.fill();
+
+    ctx.font = "34px sans-serif";
+    ctx.fillText("🌊",sea.x,sea.y);
+
+    /* Прутик */
+    ctx.beginPath();
+    ctx.arc(player.x,player.y,player.r,0,Math.PI*2);
+    ctx.fillStyle = "#79a947";
+    ctx.fill();
+
+    ctx.font = "34px sans-serif";
+    ctx.fillText("🌳",player.x,player.y);
+}
+
+function pointerPosition(e){
+
+    const rect = canvas.getBoundingClientRect();
+
+    return {
+        x:(e.clientX-rect.left)*(canvas.width/rect.width),
+        y:(e.clientY-rect.top)*(canvas.height/rect.height)
+    };
+}
+
+canvas.addEventListener("pointerdown",e=>{
+
+    if(finished) return;
+
+    const p = pointerPosition(e);
+
+    const distance =
+        Math.hypot(p.x-player.x,p.y-player.y);
+
+    if(distance <= 45){
+
+        dragging = true;
+        pointerId = e.pointerId;
+
+        try{
+            canvas.setPointerCapture(pointerId);
+        }catch(err){}
+
+        message.textContent =
+            "Отлично! Веди Прутика к морю 🌊";
+    }else{
+
+        message.textContent =
+            "Начни с Прутика 🌳";
+    }
+});
+
+canvas.addEventListener("pointermove",e=>{
+
+    if(!dragging || finished) return;
+    if(pointerId !== null && e.pointerId !== pointerId) return;
+
+    const p = pointerPosition(e);
+
+    if(!safeMovement(player.x,player.y,p.x,p.y)){
+
+        try{
+            canvas.releasePointerCapture(e.pointerId);
+        }catch(err){}
+
+        resetPlayer(
+            "🌿 Ой! Прутик сошёл с дорожки. Попробуем ещё раз!"
+        );
+
+        return;
+    }
+
+    player.x = p.x;
+    player.y = p.y;
+
+    const sea = currentLevel().sea;
+
+    if(Math.hypot(player.x-sea.x,player.y-sea.y) < 46){
+
+        finished = true;
+        dragging = false;
+
+        try{
+            canvas.releasePointerCapture(e.pointerId);
+        }catch(err){}
+
+        if(level < 8){
+
+            message.textContent =
+                "🎉 Отлично! Прутик стал ещё ближе к морю!";
+
+            nextBtn.textContent =
+                "Следующий уровень →";
+
+        }else{
+
+            message.textContent =
+                "🌊 Ура! Прутик прошёл весь путь и увидел море!";
+
+            nextBtn.textContent =
+                "🔄 Пройти ещё раз";
+        }
+
+        nextBtn.classList.remove("hidden");
+    }
+
+    draw();
+});
+
+canvas.addEventListener("pointerup",e=>{
+    dragging = false;
+    pointerId = null;
+});
+
+canvas.addEventListener("pointercancel",e=>{
+    dragging = false;
+    pointerId = null;
+});
+
+nextBtn.addEventListener("click",()=>{
+
+    if(level < 8){
+
+        level++;
+
+    }else{
+
+        level = 1;
+    }
+
+    levelText.textContent = level;
+    resetPlayer();
+});
+
+levelText.textContent = level;
+resetPlayer();
+</script>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/prutik.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Прутику
+</a>
+
+</body>
+</html>

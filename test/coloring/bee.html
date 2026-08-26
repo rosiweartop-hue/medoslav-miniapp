@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Пчёлка Медослава — выбери раскраску</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.wrap{
+    max-width:1000px;
+    margin:25px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.wrap h1{
+    margin:5px 0 8px;
+}
+
+.subtitle{
+    font-size:18px;
+    margin-bottom:25px;
+}
+
+.choice{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:30px;
+}
+
+.card{
+    background:white;
+    border-radius:25px;
+    padding:22px 20px 28px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.preview{
+    display:block;
+    width:100%;
+    height:320px;
+    object-fit:contain;
+    background:white;
+    border-radius:18px;
+}
+
+.card h2{
+    color:#587229;
+    font-size:28px;
+    margin:18px 0 10px;
+}
+
+.card p{
+    font-size:18px;
+    line-height:1.45;
+    min-height:52px;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:12px;
+    padding:13px 28px;
+    border-radius:28px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-size:18px;
+}
+
+.back{
+    margin-top:30px;
+}
+
+@media(max-width:700px){
+    .choice{
+        grid-template-columns:1fr;
+    }
+
+    .preview{
+        height:280px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>🐝 Пчёлка Медослава</h1>
+
+<div class="subtitle">
+Выбери раскраску, которая тебе больше нравится.
+</div>
+
+<div class="choice">
+
+<div class="card">
+
+<img
+class="preview"
+src="bee_simple_preview.svg"
+alt="Пчёлка Медослава — простая раскраска"
+>
+
+<h2>Простая раскраска</h2>
+
+<p>
+Крупные детали и простой рисунок.<br>
+Раскрашивай зоны одним нажатием.
+</p>
+
+<a href="bee_simple.html" class="btn">
+🎨 Раскрасить
+</a>
+
+</div>
+
+
+<div class="card">
+
+<img
+class="preview"
+src="bee_detailed.png"
+alt="Пчёлка Медослава — подробная раскраска"
+>
+
+<h2>Подробная раскраска</h2>
+
+<p>
+Больше деталей и интересный рисунок.<br>
+Раскрашивай кисточкой пальцем.
+</p>
+
+<a href="bee_detailed.html" class="btn">
+🎨 Раскрасить
+</a>
+
+</div>
+
+</div>
+
+<div class="back">
+<a href="index.html" class="btn">
+← К раскраскам
+</a>
+</div>
+
+</div>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/medoslav.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Медославу
+</a>
+
+</body>
+</html>

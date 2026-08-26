@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Зефир — выбери раскраску</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.wrap{
+    max-width:1000px;
+    margin:30px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.choice{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+    margin-top:30px;
+}
+
+.card{
+    background:white;
+    border-radius:25px;
+    padding:30px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.preview{
+    width:100%;
+    max-width:330px;
+    height:330px;
+    object-fit:contain;
+    border-radius:18px;
+    background:white;
+}
+
+.card h2{
+    color:#587229;
+    font-size:28px;
+}
+
+.card p{
+    font-size:18px;
+    line-height:1.45;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:15px;
+    padding:13px 28px;
+    border-radius:28px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-size:18px;
+}
+
+.back{
+    margin-top:35px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>☁️ Зефир</h1>
+
+<p>Выбери раскраску, которая тебе больше нравится.</p>
+
+<div class="choice">
+
+<div class="card">
+
+<img
+class="preview"
+src="zefir_simple.png"
+alt="Зефир — простая раскраска"
+>
+
+<h2>Простая раскраска</h2>
+
+<p>
+Крупные детали и простой рисунок.<br>
+Выбери цвет и раскрашивай зоны одним нажатием.
+</p>
+
+<a href="zefir_simple.html" class="btn">
+🎨 Раскрасить
+</a>
+
+</div>
+
+
+<div class="card">
+
+<img
+class="preview"
+src="zefir_detailed.png"
+alt="Зефир — подробная раскраска"
+>
+
+<h2>Подробная раскраска</h2>
+
+<p>
+Больше деталей и интересный рисунок.<br>
+Раскрашивай кисточкой пальцем.
+</p>
+
+<a href="zefir_detailed.html" class="btn">
+🎨 Раскрасить
+</a>
+
+</div>
+
+</div>
+
+<div class="back">
+<a href="index.html" class="btn">
+← К раскраскам
+</a>
+</div>
+
+</div>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/zefir.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Зефиру
+</a>
+
+</body>
+</html>

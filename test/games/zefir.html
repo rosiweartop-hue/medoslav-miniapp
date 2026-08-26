@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Зефир — Напои цветы</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.game-wrap{
+    max-width:900px;
+    margin:25px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.game-box{
+    background:white;
+    border-radius:25px;
+    padding:22px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.game-box h1{
+    color:#5791b5;
+}
+
+.info{
+    font-size:20px;
+    font-weight:bold;
+    margin:10px;
+}
+
+.message{
+    min-height:50px;
+    font-size:21px;
+    margin:12px;
+}
+
+.garden{
+    position:relative;
+    width:100%;
+    max-width:720px;
+    height:420px;
+    margin:20px auto;
+    border-radius:25px;
+    overflow:hidden;
+    background:linear-gradient(#bde8ff 0 55%, #b9df8a 55%);
+    box-shadow:inset 0 0 0 3px #8fbf71;
+    touch-action:none;
+    user-select:none;
+}
+
+.cloud{
+    position:absolute;
+    left:35px;
+    top:35px;
+    width:105px;
+    height:75px;
+    border-radius:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:70px;
+    cursor:grab;
+    z-index:10;
+    touch-action:none;
+}
+
+.cloud.dragging{
+    transform:scale(1.08);
+}
+
+.flower{
+    position:absolute;
+    width:80px;
+    height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:58px;
+}
+
+.rain{
+    position:absolute;
+    font-size:35px;
+    pointer-events:none;
+    z-index:8;
+}
+
+.game-btn,
+.back-btn{
+    display:inline-block;
+    border:none;
+    border-radius:28px;
+    padding:13px 25px;
+    font-size:18px;
+    margin:8px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.game-btn{
+    background:#5791b5;
+    color:white;
+}
+
+.back-btn{
+    background:#6b8e23;
+    color:white;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:600px){
+    .garden{
+        height:360px;
+    }
+
+    .cloud{
+        font-size:58px;
+        width:90px;
+    }
+
+    .flower{
+        font-size:48px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-wrap">
+<div class="game-box">
+
+<h1>☁️ Напои цветы</h1>
+
+<p>
+Один цветок хочет пить.<br>
+Перетащи Зефира к увядшему цветку 🥀 и помоги ему.
+</p>
+
+<div class="info">
+Уровень <span id="levelText">1</span> из 8
+</div>
+
+<div class="message" id="message">
+Возьми Зефира пальцем ☁️
+</div>
+
+<div class="garden" id="garden">
+
+<div class="cloud" id="cloud">☁️</div>
+
+</div>
+
+<button class="game-btn hidden" id="nextBtn">
+Следующий уровень →
+</button>
+
+<a href="index.html" class="back-btn">
+← Вернуться к играм
+</a>
+
+</div>
+</div>
+
+<script>
+const garden = document.getElementById("garden");
+const cloud = document.getElementById("cloud");
+const message = document.getElementById("message");
+const nextBtn = document.getElementById("nextBtn");
+const levelText = document.getElementById("levelText");
+
+let level = 1;
+let dragging = false;
+let finished = false;
+
+const positions = [
+    [80,245],
+    [210,275],
+    [340,235],
+    [480,280],
+    [590,230],
+    [150,175],
+    [405,170],
+    [555,155]
+];
+
+function numberOfFlowers(){
+    if(level <= 2) return 3;
+    if(level <= 5) return 4;
+    if(level <= 7) return 5;
+    return 6;
+}
+
+function shuffle(arr){
+    return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function createLevel(){
+
+    finished = false;
+    dragging = false;
+
+    levelText.textContent = level;
+    nextBtn.classList.add("hidden");
+
+    garden.querySelectorAll(".flower,.rain").forEach(el => el.remove());
+
+    cloud.style.left = "35px";
+    cloud.style.top = "30px";
+
+    message.textContent = "Возьми Зефира пальцем ☁️";
+
+    const count = numberOfFlowers();
+    const spots = shuffle(positions).slice(0,count);
+
+    const thirsty = Math.floor(Math.random()*count);
+
+    spots.forEach((pos,index)=>{
+
+        const flower = document.createElement("div");
+
+        flower.className = "flower";
+        flower.style.left = pos[0] + "px";
+        flower.style.top = pos[1] + "px";
+
+        if(index === thirsty){
+            flower.textContent = "🥀";
+            flower.dataset.thirsty = "yes";
+        }else{
+            const normal = ["🌷","🌼","🌸","🌻"];
+            flower.textContent =
+                normal[Math.floor(Math.random()*normal.length)];
+        }
+
+        garden.appendChild(flower);
+    });
+}
+
+function pointFromEvent(e){
+
+    const rect = garden.getBoundingClientRect();
+
+    return {
+        x:e.clientX-rect.left,
+        y:e.clientY-rect.top
+    };
+}
+
+cloud.addEventListener("pointerdown",e=>{
+
+    if(finished) return;
+
+    dragging = true;
+    cloud.classList.add("dragging");
+
+    try{
+        cloud.setPointerCapture(e.pointerId);
+    }catch(err){}
+
+    message.textContent =
+        "Неси Зефира к цветку, который хочет пить 🥀";
+});
+
+cloud.addEventListener("pointermove",e=>{
+
+    if(!dragging || finished) return;
+
+    const rect = garden.getBoundingClientRect();
+
+    let x = e.clientX - rect.left - cloud.offsetWidth/2;
+    let y = e.clientY - rect.top - cloud.offsetHeight/2;
+
+    x = Math.max(0, Math.min(x, garden.clientWidth-cloud.offsetWidth));
+    y = Math.max(0, Math.min(y, garden.clientHeight-cloud.offsetHeight));
+
+    cloud.style.left = x + "px";
+    cloud.style.top = y + "px";
+});
+
+cloud.addEventListener("pointerup",e=>{
+
+    if(!dragging || finished) return;
+
+    dragging = false;
+    cloud.classList.remove("dragging");
+
+    const cloudRect = cloud.getBoundingClientRect();
+    const thirsty = garden.querySelector('[data-thirsty="yes"]');
+
+    if(!thirsty) return;
+
+    const flowerRect = thirsty.getBoundingClientRect();
+
+    const cloudX =
+        cloudRect.left + cloudRect.width/2;
+
+    const flowerX =
+        flowerRect.left + flowerRect.width/2;
+
+    const cloudBottom =
+        cloudRect.bottom;
+
+    const flowerTop =
+        flowerRect.top;
+
+    const closeX =
+        Math.abs(cloudX-flowerX) < 75;
+
+    const closeY =
+        Math.abs(cloudBottom-flowerTop) < 130;
+
+    if(closeX && closeY){
+
+        finished = true;
+
+        const rain = document.createElement("div");
+        rain.className = "rain";
+        rain.textContent = "💧💧💧";
+
+        rain.style.left =
+            (thirsty.offsetLeft-5) + "px";
+
+        rain.style.top =
+            (thirsty.offsetTop-55) + "px";
+
+        garden.appendChild(rain);
+
+        setTimeout(()=>{
+            thirsty.textContent = "🌸";
+        },450);
+
+        message.textContent =
+            level < 8
+            ? "🌸 Получилось! Цветок снова расцвёл!"
+            : "🌈 Ура! Зефир напоил весь волшебный сад!";
+
+        nextBtn.textContent =
+            level < 8
+            ? "Следующий уровень →"
+            : "🔄 Играть ещё";
+
+        nextBtn.classList.remove("hidden");
+
+    }else{
+
+        message.textContent =
+            "Здесь дождик пока не нужен 😊 Найди цветок 🥀";
+    }
+});
+
+nextBtn.addEventListener("click",()=>{
+
+    if(level < 8){
+        level++;
+    }else{
+        level = 1;
+    }
+
+    createLevel();
+});
+
+createLevel();
+</script>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/zefir.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Зефиру
+</a>
+
+</body>
+</html>

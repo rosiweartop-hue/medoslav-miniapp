@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Сияша — Дорога звёзд</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.game-wrap{
+    max-width:900px;
+    margin:25px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.game-box{
+    background:white;
+    border-radius:25px;
+    padding:22px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.game-box h1{
+    color:#8865b6;
+}
+
+.info{
+    font-size:20px;
+    font-weight:bold;
+    margin:10px;
+}
+
+.message{
+    min-height:50px;
+    font-size:21px;
+    margin:12px;
+}
+
+.sky{
+    position:relative;
+    width:100%;
+    max-width:720px;
+    height:430px;
+    margin:20px auto;
+    border-radius:25px;
+    overflow:hidden;
+    background:linear-gradient(#18254f,#38366f,#694b89);
+    box-shadow:0 6px 20px rgba(0,0,0,.2);
+    touch-action:manipulation;
+}
+
+.star{
+    position:absolute;
+    width:72px;
+    height:72px;
+    border:none;
+    background:#fff3a6;
+    color:#111111;
+    font-size:26px;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 0 14px rgba(255,240,150,.8);
+    touch-action:manipulation;
+    clip-path:polygon(
+        50% 0%,
+        61% 35%,
+        98% 35%,
+        68% 57%,
+        79% 91%,
+        50% 70%,
+        21% 91%,
+        32% 57%,
+        2% 35%,
+        39% 35%
+    );
+    text-shadow:none;
+}
+
+.star.done{
+    background:#ffd84d;
+    color:#000000;
+    box-shadow:0 0 28px #ffe56d;
+    transform:scale(1.08);
+}
+
+.star.wrong{
+    animation:shake .25s;
+}
+
+.siyasha{
+    position:absolute;
+    left:18px;
+    bottom:15px;
+    font-size:58px;
+    filter:drop-shadow(0 0 12px #fff29d);
+}
+
+.finish{
+    position:absolute;
+    right:18px;
+    top:18px;
+    font-size:50px;
+}
+
+.line{
+    position:absolute;
+    height:5px;
+    background:#ffe56d;
+    transform-origin:0 50%;
+    box-shadow:0 0 10px #ffe56d;
+    pointer-events:none;
+    z-index:1;
+}
+
+.star{
+    z-index:3;
+}
+
+.game-btn,
+.back-btn{
+    display:inline-block;
+    border:none;
+    border-radius:28px;
+    padding:13px 25px;
+    font-size:18px;
+    margin:8px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.game-btn{
+    background:#8865b6;
+    color:white;
+}
+
+.back-btn{
+    background:#6b8e23;
+    color:white;
+}
+
+.hidden{
+    display:none;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-7px);}
+    50%{transform:translateX(7px);}
+    75%{transform:translateX(-5px);}
+    100%{transform:translateX(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-wrap">
+<div class="game-box">
+
+<h1>⭐ Дорога звёзд</h1>
+
+<p>
+Помоги Сияше зажечь дорогу.<br>
+Нажимай на звёзды по порядку: 1, 2, 3…
+</p>
+
+<div class="info">
+Уровень <span id="levelText">1</span> из 8
+</div>
+
+<div class="message" id="message">
+Найди звезду №1 ⭐
+</div>
+
+<div class="sky" id="sky">
+
+<div class="siyasha">✨</div>
+<div class="finish">🏠</div>
+
+</div>
+
+<button id="nextBtn" class="game-btn hidden">
+Следующий уровень →
+</button>
+
+<a href="index.html" class="back-btn">
+← Вернуться к играм
+</a>
+
+</div>
+</div>
+
+<script>
+const sky = document.getElementById("sky");
+const message = document.getElementById("message");
+const levelText = document.getElementById("levelText");
+const nextBtn = document.getElementById("nextBtn");
+
+let level = 1;
+let expected = 1;
+let previousStar = null;
+
+const spots = [
+    [90,320],
+    [175,245],
+    [275,330],
+    [365,220],
+    [465,305],
+    [565,215],
+    [620,115],
+    [480,95],
+    [325,105],
+    [195,115]
+];
+
+function starCount(){
+    return level + 2;
+}
+
+function shuffle(array){
+    return [...array].sort(() => Math.random() - 0.5);
+}
+
+function drawLine(a,b){
+
+    const ax = a.offsetLeft + a.offsetWidth/2;
+    const ay = a.offsetTop + a.offsetHeight/2;
+
+    const bx = b.offsetLeft + b.offsetWidth/2;
+    const by = b.offsetTop + b.offsetHeight/2;
+
+    const dx = bx-ax;
+    const dy = by-ay;
+
+    const length = Math.hypot(dx,dy);
+    const angle = Math.atan2(dy,dx) * 180 / Math.PI;
+
+    const line = document.createElement("div");
+
+    line.className = "line";
+    line.style.left = ax + "px";
+    line.style.top = ay + "px";
+    line.style.width = length + "px";
+    line.style.transform = `rotate(${angle}deg)`;
+
+    sky.appendChild(line);
+}
+
+function createLevel(){
+
+    expected = 1;
+    previousStar = null;
+
+    levelText.textContent = level;
+
+    nextBtn.classList.add("hidden");
+
+    message.textContent = "Найди звезду №1 ⭐";
+
+    sky.querySelectorAll(".star,.line").forEach(el => el.remove());
+
+    const count = starCount();
+    const chosen = shuffle(spots).slice(0,count);
+
+    /*
+       Сортируем выбранные позиции примерно слева направо,
+       чтобы получившаяся дорожка выглядела естественнее.
+    */
+    chosen.sort((a,b) => a[0]-b[0]);
+
+    chosen.forEach((pos,index)=>{
+
+        const star = document.createElement("button");
+
+        star.className = "star";
+        star.textContent = index+1;
+        star.dataset.number = index+1;
+
+        star.style.left = pos[0] + "px";
+        star.style.top = pos[1] + "px";
+
+        star.addEventListener("click",()=>selectStar(star));
+
+        sky.appendChild(star);
+    });
+}
+
+function selectStar(star){
+
+    const number = Number(star.dataset.number);
+
+    if(star.classList.contains("done")){
+        return;
+    }
+
+    if(number !== expected){
+
+        star.classList.add("wrong");
+
+        message.textContent =
+            `Ой 😊 Сейчас нужна звезда №${expected}`;
+
+        setTimeout(()=>{
+            star.classList.remove("wrong");
+        },300);
+
+        return;
+    }
+
+    star.classList.add("done");
+
+    if(previousStar){
+        drawLine(previousStar,star);
+    }
+
+    previousStar = star;
+    expected++;
+
+    const count = starCount();
+
+    if(expected <= count){
+
+        message.textContent =
+            `Отлично! Теперь звезда №${expected} ⭐`;
+
+    }else{
+
+        if(level < 8){
+
+            message.textContent =
+                "✨ Получилось! Сияша зажгла дорогу!";
+
+            nextBtn.textContent =
+                "Следующий уровень →";
+
+        }else{
+
+            message.textContent =
+                "🏠⭐ Ура! Сияша осветила всю дорогу домой!";
+
+            nextBtn.textContent =
+                "🔄 Играть ещё";
+        }
+
+        nextBtn.classList.remove("hidden");
+    }
+}
+
+nextBtn.addEventListener("click",()=>{
+
+    if(level < 8){
+        level++;
+    }else{
+        level = 1;
+    }
+
+    createLevel();
+});
+
+createLevel();
+</script>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/siyasha.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Сияше
+</a>
+
+</body>
+</html>

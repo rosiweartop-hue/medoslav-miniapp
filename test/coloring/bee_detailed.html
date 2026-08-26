@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Пчёлка Медослава — подробная раскраска</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef6eb;
+    color:#344520;
+}
+
+.wrap{
+    max-width:1100px;
+    margin:auto;
+    padding:18px;
+    text-align:center;
+}
+
+h1{
+    color:#587229;
+}
+
+.palette{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#eef6eb;
+    padding:7px 5px;
+    border-radius:14px;
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin:18px 0;
+}
+
+.color{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    border:4px solid white;
+    outline:2px solid #aaa;
+}
+
+.color.selected{
+    outline:5px solid #333;
+    transform:scale(1.08);
+}
+
+.tools{
+    margin:12px 0 18px;
+}
+
+.tool{
+    border:none;
+    border-radius:22px;
+    padding:11px 17px;
+    margin:5px;
+    font-size:17px;
+    cursor:pointer;
+    background:#e6ecd9;
+}
+
+.tool.active{
+    background:#6b8e23;
+    color:white;
+}
+
+.picture{
+    position:relative;
+    width:100%;
+    max-width:1000px;
+    width:96vw;
+    margin:auto;
+    border-radius:22px;
+    overflow:hidden;
+    background:white;
+    box-shadow:0 6px 20px rgba(0,0,0,.15);
+    touch-action:none;
+}
+
+.picture img{
+    display:block;
+    width:100%;
+    height:auto;
+    pointer-events:none;
+    user-select:none;
+}
+
+#paintCanvas{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    touch-action:none;
+}
+
+.buttons{
+    margin-top:18px;
+}
+
+.btn{
+    display:inline-block;
+    border:none;
+    border-radius:25px;
+    padding:12px 22px;
+    margin:6px;
+    font-size:18px;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.reset{
+    background:#d99c32;
+    color:white;
+}
+
+.back{
+    background:#6b8e23;
+    color:white;
+}
+
+.tip{
+    margin:12px auto;
+    max-width:800px;
+    padding:12px;
+    border-radius:15px;
+    background:#fff8d9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>🐝 Пчёлка Медослава — подробная раскраска</h1>
+
+<p>
+Выбери цвет и раскрашивай картинку пальцем.
+</p>
+
+<div class="palette">
+
+<button class="color selected"
+data-color="#FFD84D"
+style="background:#FFD84D"></button>
+
+<button class="color"
+data-color="#FF5B5B"
+style="background:#FF5B5B"></button>
+
+<button class="color"
+data-color="#54B8EE"
+style="background:#54B8EE"></button>
+
+<button class="color"
+data-color="#69B85A"
+style="background:#69B85A"></button>
+
+<button class="color"
+data-color="#9B67D4"
+style="background:#9B67D4"></button>
+
+<button class="color"
+data-color="#FF8FC4"
+style="background:#FF8FC4"></button>
+
+<button class="color"
+data-color="#8B5A2B"
+style="background:#8B5A2B"></button>
+<button class="color"
+data-color="#FFFFFF"
+style="background:#FFFFFF"></button>
+
+<button class="color"
+data-color="#000000"
+style="background:#000000"></button>
+
+</div>
+
+<div class="tools">
+
+<button class="tool" data-size="18">
+✏️ Тонкая
+</button>
+
+<button class="tool active" data-size="35">
+🖌️ Средняя
+</button>
+
+<button class="tool" data-size="60">
+🖍️ Толстая
+</button>
+
+</div>
+
+<div class="picture" id="picture">
+
+<img
+id="coloringImage"
+src="bee_detailed.png"
+alt="Подробная раскраска Пчёлки Медослава"
+>
+
+<canvas id="paintCanvas"></canvas>
+
+</div>
+
+<div class="tip">
+💡 Для мелких деталей используй тонкую кисточку,
+а для больших цветов и листьев — толстую.
+</div>
+
+<div class="buttons">
+
+<button class="btn reset" id="clearBtn">
+🔄 Очистить краски
+</button>
+
+<a href="bee.html" class="btn back">
+← Выбрать другую раскраску
+</a>
+
+</div>
+
+</div>
+
+
+<script>
+const image = document.getElementById("coloringImage");
+const canvas = document.getElementById("paintCanvas");
+const ctx = canvas.getContext("2d");
+
+let selectedColor = "#FFD84D";
+let brushSize = 35;
+let painting = false;
+let lastX = 0;
+let lastY = 0;
+
+image.addEventListener("load", () => {
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+});
+
+document.querySelectorAll(".color").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        selectedColor = button.dataset.color;
+
+        document.querySelectorAll(".color")
+        .forEach(b => b.classList.remove("selected"));
+
+        button.classList.add("selected");
+    });
+});
+
+document.querySelectorAll(".tool").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        brushSize = Number(button.dataset.size);
+
+        document.querySelectorAll(".tool")
+        .forEach(b => b.classList.remove("active"));
+
+        button.classList.add("active");
+    });
+});
+
+function getPoint(e){
+
+    const rect = canvas.getBoundingClientRect();
+
+    return {
+        x:(e.clientX-rect.left)*(canvas.width/rect.width),
+        y:(e.clientY-rect.top)*(canvas.height/rect.height)
+    };
+}
+
+canvas.addEventListener("pointerdown", e => {
+
+    painting = true;
+
+    try{
+        canvas.setPointerCapture(e.pointerId);
+    }catch(err){}
+
+    const p = getPoint(e);
+
+    lastX = p.x;
+    lastY = p.y;
+});
+
+canvas.addEventListener("pointermove", e => {
+
+    if(!painting) return;
+
+    const p = getPoint(e);
+
+    ctx.beginPath();
+
+    ctx.moveTo(lastX,lastY);
+    ctx.lineTo(p.x,p.y);
+
+    /*
+      Краска немного прозрачная —
+      поэтому чёрные линии рисунка
+      остаются хорошо заметными.
+    */
+    ctx.strokeStyle = selectedColor;
+    ctx.globalAlpha = 0.58;
+    ctx.lineWidth = brushSize;
+
+    ctx.stroke();
+
+    ctx.globalAlpha = 1;
+
+    lastX = p.x;
+    lastY = p.y;
+});
+
+function stopPainting(){
+    painting = false;
+}
+
+canvas.addEventListener("pointerup",stopPainting);
+canvas.addEventListener("pointercancel",stopPainting);
+canvas.addEventListener("pointerleave",stopPainting);
+
+document.getElementById("clearBtn")
+.addEventListener("click", () => {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+});
+</script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/medoslav.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Медославу
+</a>
+
+</body>
+</html>

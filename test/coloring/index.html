@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Раскраски — Медослав и его друзья</title>
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.wrap{
+    max-width:1100px;
+    margin:auto;
+    padding:25px;
+    text-align:center;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:22px;
+    margin-top:30px;
+}
+
+.card{
+    background:white;
+    border-radius:24px;
+    padding:25px 18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+}
+
+.icon{
+    font-size:70px;
+}
+
+.play{
+    display:inline-block;
+    margin-top:15px;
+    padding:12px 24px;
+    border-radius:25px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-size:18px;
+}
+
+.soon{
+    display:inline-block;
+    margin-top:15px;
+    padding:11px 22px;
+    border-radius:25px;
+    background:#e8e8e8;
+    color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🎨 Раскраски Волшебной долины</h1>
+
+<nav>
+<a href="../index.html">🌿 Долина</a>
+<a href="../heroes/index.html">🧙 Герои</a>
+<a href="../stories/index.html">📖 Истории</a>
+<a href="../games/index.html">🎮 Игры</a>
+<a href="index.html">🎨 Раскраски</a>
+</nav>
+</header>
+
+<div class="wrap">
+
+<h2>Выбирай рисунок и раскрашивай пальцем</h2>
+<p>Никакой рекламы — только краски и Волшебная долина ✨</p>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">🐝</div>
+<h2>Пчёлка Медослава</h2>
+<p>Помоги маленькой пчёлке стать яркой.</p>
+<a href="bee.html" class="play">🎨 Раскрасить</a>
+</div>
+
+<div class="card">
+<div class="icon">🧙‍♂️</div>
+<h2>Хмурдан</h2>
+<p>Выбери простую или подробную раскраску.</p>
+<a href="khmurdan.html" class="play">🎨 Раскрасить</a>
+</div>
+
+<div class="card">
+<div class="icon">🌳</div>
+<h2>Прутик</h2>
+<p>Выбери простую или подробную раскраску.</p>
+<a href="prutik.html" class="play">🎨 Раскрасить</a>
+</div>
+
+<div class="card">
+<div class="icon">☁️</div>
+<h2>Зефир</h2>
+<p>Выбери простую или подробную раскраску.</p>
+<a href="zefir_choice.html" class="play">🎨 Раскрасить</a>
+</div>
+
+<div class="card">
+<div class="icon">⭐</div>
+<h2>Сияша</h2>
+<p>Выбери простую или подробную раскраску.</p>
+<a href="siyasha_choice.html" class="play">🎨 Раскрасить</a>
+</div>
+
+</div>
+</div>
+
+<script src="../script.js"></script>
+</body>
+</html>

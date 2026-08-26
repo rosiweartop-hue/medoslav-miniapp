@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Хмурдан — Запомни заклинание</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+.game-wrap{
+    max-width:850px;
+    margin:25px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.game-box{
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+
+.game-box h1{
+    color:#63458a;
+}
+
+.level{
+    font-size:20px;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+.message{
+    min-height:55px;
+    font-size:21px;
+    margin:15px 0;
+}
+
+.runes{
+    display:grid;
+    grid-template-columns:repeat(2,150px);
+    justify-content:center;
+    gap:20px;
+    margin:25px auto;
+}
+
+.rune{
+    width:150px;
+    height:130px;
+    border:none;
+    border-radius:25px;
+    font-size:65px;
+    background:#eee7f8;
+    box-shadow:0 5px 12px rgba(0,0,0,.15);
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:.15s;
+}
+
+.rune.active{
+    background:#cfa9ff;
+    transform:scale(1.10);
+    box-shadow:0 0 25px #9d62d9;
+}
+
+.rune:active{
+    transform:scale(.96);
+}
+
+.magic-btn,
+.back-btn{
+    display:inline-block;
+    border:none;
+    border-radius:28px;
+    padding:13px 25px;
+    font-size:18px;
+    margin:8px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.magic-btn{
+    background:#7443a7;
+    color:white;
+}
+
+.back-btn{
+    background:#6b8e23;
+    color:white;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:550px){
+    .runes{
+        grid-template-columns:repeat(2,120px);
+    }
+
+    .rune{
+        width:120px;
+        height:110px;
+        font-size:55px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-wrap">
+
+<div class="game-box">
+
+<h1>🧙‍♂️ Запомни заклинание</h1>
+
+<p>
+Хмурдан покажет волшебные знаки.<br>
+Запомни их порядок и повтори.
+</p>
+
+<div class="level">
+Уровень <span id="level">1</span> из 5
+</div>
+
+<div class="message" id="message">
+Нажми «Показать заклинание»
+</div>
+
+<div class="runes">
+
+<button class="rune" data-rune="0">⭐</button>
+<button class="rune" data-rune="1">🌙</button>
+<button class="rune" data-rune="2">⚡</button>
+<button class="rune" data-rune="3">🍃</button>
+
+</div>
+
+<button class="magic-btn" id="showBtn">
+✨ Показать заклинание
+</button>
+
+<a class="back-btn" href="index.html">
+← Вернуться к играм
+</a>
+
+</div>
+</div>
+
+
+<script>
+const runeButtons = [...document.querySelectorAll(".rune")];
+const message = document.getElementById("message");
+const levelText = document.getElementById("level");
+const showBtn = document.getElementById("showBtn");
+
+let level = 1;
+let sequence = [];
+let playerIndex = 0;
+let showing = false;
+let finished = false;
+
+function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function addRune(){
+    sequence.push(Math.floor(Math.random() * 4));
+}
+
+async function showSequence(){
+
+    if(showing) return;
+
+    showing = true;
+    playerIndex = 0;
+
+    runeButtons.forEach(b => b.disabled = true);
+    showBtn.disabled = true;
+
+    message.textContent = "Смотри внимательно 👀";
+
+    await wait(600);
+
+    for(const rune of sequence){
+
+        runeButtons[rune].classList.add("active");
+
+        await wait(650);
+
+        runeButtons[rune].classList.remove("active");
+
+        await wait(280);
+    }
+
+    message.textContent = "Теперь повтори заклинание ✨";
+
+    runeButtons.forEach(b => b.disabled = false);
+    showBtn.disabled = false;
+
+    showing = false;
+}
+
+function startLevel(){
+
+    levelText.textContent = level;
+    playerIndex = 0;
+    finished = false;
+
+    while(sequence.length < level + 1){
+        addRune();
+    }
+
+    message.textContent = "Нажми «Показать заклинание»";
+    showBtn.textContent = "✨ Показать заклинание";
+}
+
+runeButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        if(showing || finished || sequence.length === 0) return;
+
+        const selected = Number(button.dataset.rune);
+
+        if(selected !== sequence[playerIndex]){
+
+            playerIndex = 0;
+
+            message.textContent =
+                "Упс! Заклинание перепуталось 😊 Посмотри ещё раз.";
+
+            showBtn.textContent = "👀 Показать ещё раз";
+
+            return;
+        }
+
+        playerIndex++;
+
+        if(playerIndex === sequence.length){
+
+            finished = true;
+
+            if(level < 5){
+
+                message.textContent =
+                    "🎉 Верно! Хмурдан вспомнил заклинание!";
+
+                showBtn.textContent = "Следующий уровень →";
+
+            } else {
+
+                message.textContent =
+                    "🏆 Отлично! Ты прошёл все 5 уровней!";
+
+                showBtn.textContent = "🔄 Играть ещё";
+            }
+        }
+    });
+});
+
+showBtn.addEventListener("click", async () => {
+
+    if(finished){
+
+        if(level < 5){
+
+            level++;
+            addRune();
+            startLevel();
+            await showSequence();
+
+        } else {
+
+            level = 1;
+            sequence = [];
+            addRune();
+            addRune();
+            startLevel();
+        }
+
+        return;
+    }
+
+    await showSequence();
+});
+
+addRune();
+addRune();
+startLevel();
+</script>
+
+<script src="../script.js"></script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/khmurdan.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Хмурдану
+</a>
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Сияша — простая раскраска</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef6eb;
+    color:#344520;
+}
+
+.wrap{
+    max-width:1050px;
+    margin:auto;
+    padding:8px 12px;
+    text-align:center;
+}
+
+h1{
+    margin:3px 0 7px;
+    color:#67408f;
+    font-size:29px;
+}
+
+.palette{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#eef6eb;
+    padding:7px 5px;
+    border-radius:14px;
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:7px 0 10px;
+}
+
+.color{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    border:3px solid white;
+    outline:2px solid #aaa;
+    cursor:pointer;
+}
+
+.color.selected{
+    outline:5px solid #222;
+    transform:scale(1.08);
+}
+
+.picture{
+    width:min(700px, calc(100vh - 175px));
+    max-width:96vw;
+    margin:auto;
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 5px 16px rgba(0,0,0,.16);
+}
+
+canvas{
+    display:block;
+    width:100%;
+    height:auto;
+    touch-action:manipulation;
+}
+
+.buttons{
+    margin-top:7px;
+}
+
+.btn{
+    display:inline-block;
+    border:none;
+    border-radius:22px;
+    padding:9px 18px;
+    margin:3px;
+    font-size:16px;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.reset{
+    background:#d79a32;
+    color:white;
+}
+
+.back{
+    background:#6b8e23;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>⭐ Сияша — простая раскраска</h1>
+
+<div class="palette">
+
+<button class="color selected"
+data-color="#7E44B5"
+style="background:#7E44B5"></button>
+
+<button class="color"
+data-color="#244C8F"
+style="background:#244C8F"></button>
+
+<button class="color"
+data-color="#58B7F0"
+style="background:#58B7F0"></button>
+
+<button class="color"
+data-color="#69B85A"
+style="background:#69B85A"></button>
+
+<button class="color"
+data-color="#FFD84D"
+style="background:#FFD84D"></button>
+
+<button class="color"
+data-color="#FF8A32"
+style="background:#FF8A32"></button>
+
+<button class="color"
+data-color="#FF5B5B"
+style="background:#FF5B5B"></button>
+
+<button class="color"
+data-color="#FF8FC4"
+style="background:#FF8FC4"></button>
+
+<button class="color"
+data-color="#8B5A2B"
+style="background:#8B5A2B"></button>
+
+<button class="color"
+data-color="#888888"
+style="background:#888888"></button>
+
+<button class="color"
+data-color="#000000"
+style="background:#000000"></button>
+
+<button class="color"
+data-color="#FFFFFF"
+style="background:#FFFFFF"></button>
+
+</div>
+
+<div class="picture">
+<canvas id="canvas"></canvas>
+</div>
+
+<div class="buttons">
+
+<button class="btn reset" id="resetBtn">
+🔄 Начать заново
+</button>
+
+<a href="index.html" class="btn back">
+← К раскраскам
+</a>
+
+</div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {willReadFrequently:true});
+
+const image = new Image();
+image.src = "siyasha_simple.png";
+
+let selectedColor = "#7E44B5";
+let originalPixels = null;
+
+image.onload = () => {
+
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+
+    ctx.drawImage(image,0,0);
+
+    originalPixels =
+        new Uint8ClampedArray(
+            ctx.getImageData(
+                0,0,
+                canvas.width,
+                canvas.height
+            ).data
+        );
+};
+
+
+document.querySelectorAll(".color").forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+        selectedColor = button.dataset.color;
+
+        document.querySelectorAll(".color")
+        .forEach(b=>b.classList.remove("selected"));
+
+        button.classList.add("selected");
+    });
+});
+
+
+function hexToRgb(hex){
+
+    hex = hex.replace("#","");
+
+    return {
+        r:parseInt(hex.substring(0,2),16),
+        g:parseInt(hex.substring(2,4),16),
+        b:parseInt(hex.substring(4,6),16)
+    };
+}
+
+
+/*
+   Проверяем оригинальный чёрно-белый рисунок.
+   Закрашиваем только светлые области,
+   поэтому чёрные контуры остаются на месте.
+*/
+function isFillable(pixel){
+
+    const i = pixel * 4;
+
+    return (
+        originalPixels[i] > 225 &&
+        originalPixels[i+1] > 225 &&
+        originalPixels[i+2] > 225
+    );
+}
+
+
+function floodFill(startX,startY,color){
+
+    if(!originalPixels) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    if(
+        startX < 0 ||
+        startY < 0 ||
+        startX >= w ||
+        startY >= h
+    ) return;
+
+    const startPixel = startY*w + startX;
+
+    /*
+       Если нажали прямо на чёрную линию,
+       ничего не делаем.
+    */
+    if(!isFillable(startPixel)){
+        return;
+    }
+
+    const imageData =
+        ctx.getImageData(0,0,w,h);
+
+    const data = imageData.data;
+
+    const rgb = hexToRgb(color);
+
+    const visited =
+        new Uint8Array(w*h);
+
+    const stack = [
+        [startX,startY]
+    ];
+
+    while(stack.length){
+
+        const point = stack.pop();
+
+        const x = point[0];
+        const y = point[1];
+
+        let left = x;
+
+        /*
+           Идём влево до границы области.
+        */
+        while(left >= 0){
+
+            const p = y*w + left;
+
+            if(
+                visited[p] ||
+                !isFillable(p)
+            ){
+                break;
+            }
+
+            left--;
+        }
+
+        left++;
+
+        let spanUp = false;
+        let spanDown = false;
+
+        /*
+           Закрашиваем строку слева направо.
+        */
+        for(
+            let px = left;
+            px < w;
+            px++
+        ){
+
+            const p = y*w + px;
+
+            if(
+                visited[p] ||
+                !isFillable(p)
+            ){
+                break;
+            }
+
+            visited[p] = 1;
+
+            const i = p*4;
+
+            data[i]   = rgb.r;
+            data[i+1] = rgb.g;
+            data[i+2] = rgb.b;
+            data[i+3] = 255;
+
+
+            /*
+               Проверяем область сверху.
+            */
+            if(y > 0){
+
+                const up = (y-1)*w + px;
+
+                if(
+                    !visited[up] &&
+                    isFillable(up)
+                ){
+
+                    if(!spanUp){
+
+                        stack.push([
+                            px,
+                            y-1
+                        ]);
+
+                        spanUp = true;
+                    }
+
+                }else{
+
+                    spanUp = false;
+                }
+            }
+
+
+            /*
+               Проверяем область снизу.
+            */
+            if(y < h-1){
+
+                const down =
+                    (y+1)*w + px;
+
+                if(
+                    !visited[down] &&
+                    isFillable(down)
+                ){
+
+                    if(!spanDown){
+
+                        stack.push([
+                            px,
+                            y+1
+                        ]);
+
+                        spanDown = true;
+                    }
+
+                }else{
+
+                    spanDown = false;
+                }
+            }
+        }
+    }
+
+    ctx.putImageData(imageData,0,0);
+}
+
+
+canvas.addEventListener("pointerdown",e=>{
+
+    e.preventDefault();
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    const x = Math.floor(
+        (e.clientX-rect.left) *
+        (canvas.width/rect.width)
+    );
+
+    const y = Math.floor(
+        (e.clientY-rect.top) *
+        (canvas.height/rect.height)
+    );
+
+    floodFill(
+        x,
+        y,
+        selectedColor
+    );
+});
+
+
+document.getElementById("resetBtn")
+.addEventListener("click",()=>{
+
+    ctx.clearRect(
+        0,0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.drawImage(image,0,0);
+});
+
+</script>
+
+
+<!-- HERO-RETURN-BUTTON -->
+<a href="../heroes/siyasha.html"
+   class="hero-return-button"
+   aria-label="Вернуться к герою"
+   style="
+       position:fixed;
+       left:16px;
+       top:16px;
+       z-index:9999;
+       display:inline-block;
+       padding:11px 18px;
+       border-radius:28px;
+       background:#6b8e23;
+       color:white;
+       text-decoration:none;
+       font-family:Arial,sans-serif;
+       font-size:16px;
+       font-weight:bold;
+       box-shadow:0 4px 12px rgba(0,0,0,.20);
+   ">
+← К Сияше
+</a>
+
+</body>
+</html>
