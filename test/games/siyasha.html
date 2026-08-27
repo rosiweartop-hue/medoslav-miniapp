@@ -282,8 +282,21 @@ function createLevel(){
         star.textContent = index+1;
         star.dataset.number = index+1;
 
-        star.style.left = pos[0] + "px";
-        star.style.top = pos[1] + "px";
+        /*
+           Координаты spots рассчитаны для поля 720 × 430.
+           На телефоне поле уже, поэтому масштабируем позиции,
+           чтобы звезда всегда оставалась внутри игрового поля.
+        */
+        const starSize = 72;
+
+        const usableW = Math.max(0, sky.clientWidth - starSize);
+        const usableH = Math.max(0, sky.clientHeight - starSize);
+
+        const x = (pos[0] / (720 - starSize)) * usableW;
+        const y = (pos[1] / (430 - starSize)) * usableH;
+
+        star.style.left = x + "px";
+        star.style.top = y + "px";
 
         star.addEventListener("click",()=>selectStar(star));
 
