@@ -371,15 +371,38 @@ cloud.addEventListener("pointerup",e=>{
     }
 });
 
-nextBtn.addEventListener("click",()=>{
+let nextLevelBusy = false;
 
-    if(level < 8){
-        level++;
-    }else{
-        level = 1;
-    }
+nextBtn.addEventListener("pointerup",(e)=>{
 
-    createLevel();
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(nextLevelBusy) return;
+    nextLevelBusy = true;
+
+    nextBtn.disabled = true;
+
+    setTimeout(()=>{
+
+        if(level < 8){
+            level++;
+        }else{
+            level = 1;
+        }
+
+        createLevel();
+
+        nextBtn.disabled = false;
+        nextLevelBusy = false;
+
+    },150);
+});
+
+/* Гасим возможный "призрачный" click на мобильных */
+nextBtn.addEventListener("click",(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
 });
 
 createLevel();
