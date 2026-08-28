@@ -266,3 +266,31 @@ header nav .back-button {
         animation-duration: 15s;
     }
 }
+
+/* ===== MOBILE MAIN MAP ===== */
+@media (max-width: 600px) {
+
+    main {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    .welcome {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    .magic-map {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .magic-map img {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        height: auto !important;
+    }
+}
