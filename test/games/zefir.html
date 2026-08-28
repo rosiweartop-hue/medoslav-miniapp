@@ -228,8 +228,23 @@ function createLevel(){
         const flower = document.createElement("div");
 
         flower.className = "flower";
-        flower.style.left = pos[0] + "px";
-        flower.style.top = pos[1] + "px";
+
+        /*
+           Координаты positions рассчитаны для поля 720 × 420.
+           На телефоне поле уже и ниже, поэтому масштабируем
+           позиции, чтобы каждый цветок всегда оставался видимым.
+        */
+        const flowerW = 80;
+        const flowerH = 90;
+
+        const usableW = Math.max(0, garden.clientWidth - flowerW);
+        const usableH = Math.max(0, garden.clientHeight - flowerH);
+
+        const x = (pos[0] / (720 - flowerW)) * usableW;
+        const y = (pos[1] / (420 - flowerH)) * usableH;
+
+        flower.style.left = x + "px";
+        flower.style.top = y + "px";
 
         if(index === thirsty){
             flower.textContent = "🥀";
