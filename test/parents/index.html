@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Родительская полянка — Медослав и его друзья</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+.parents-header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:24px 15px 28px;
+}
+
+.parents-header h1{
+    margin:0 0 8px;
+    font-size:36px;
+}
+
+.parents-header p{
+    margin:0 auto;
+    max-width:700px;
+    font-size:18px;
+    line-height:1.5;
+}
+
+.back-button{
+    display:inline-block;
+    margin-top:18px;
+    padding:11px 22px;
+    border-radius:26px;
+    background:white;
+    color:#5f7f20;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.parents-main{
+    width:min(1000px, 94%);
+    margin:28px auto 50px;
+}
+
+.intro{
+    background:white;
+    border-radius:24px;
+    padding:24px;
+    text-align:center;
+    margin-bottom:24px;
+    box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+
+.intro h2{
+    margin-top:0;
+    color:#6b8e23;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:18px;
+}
+
+.card{
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+
+.card h2{
+    margin-top:0;
+    color:#6b8e23;
+    font-size:23px;
+}
+
+.card p{
+    line-height:1.55;
+    margin-bottom:0;
+}
+
+.card-button{
+    display:inline-block;
+    margin-top:16px;
+    padding:10px 18px;
+    border-radius:24px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.coming{
+    opacity:.75;
+}
+
+@media(max-width:650px){
+    .parents-header h1{
+        font-size:28px;
+    }
+
+    .parents-header p{
+        font-size:16px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .parents-main{
+        width:94%;
+        margin-top:18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="parents-header">
+    <h1>🌿 Родительская полянка</h1>
+
+    <p>
+        Полезные материалы, игры и идеи,
+        чтобы продолжить приключения Медослава
+        вместе с ребёнком — даже без экрана.
+    </p>
+
+    <a href="../index.html" class="back-button">
+        ← Вернуться в Волшебную долину
+    </a>
+</header>
+
+<main class="parents-main">
+
+<section class="intro">
+    <h2>🍯 Добро пожаловать!</h2>
+
+    <p>
+        Здесь мы собираем материалы для родителей:
+        добрые развивающие задания, игры для всей семьи
+        и идеи для совместного времени с ребёнком.
+    </p>
+</section>
+
+<div class="cards">
+
+<section class="card">
+    <h2>🌿 О проекте</h2>
+    <p>
+        Узнайте о мире Медослава и его друзей,
+        ценностях Волшебной долины и идее проекта.
+    </p>
+</section>
+
+<section class="card">
+    <h2>🧠 Что развивает Медослав</h2>
+    <p>
+        Внимание, память, логику, воображение,
+        мелкую моторику, понимание эмоций,
+        доброту и взаимопомощь.
+    </p>
+</section>
+
+<section class="card">
+    <h2>🖨️ Развивашки для печати</h2>
+    <p>
+        Лабиринты, задания на внимание,
+        соединялки, счёт, формы, цвета
+        и другие материалы формата А4.
+    </p>
+
+    <span class="card-button coming">
+        Скоро появятся
+    </span>
+</section>
+
+<section class="card">
+    <h2>🎲 Настольная игра</h2>
+    <p>
+        Ходилка «Волшебная долина» для печати на А4.
+        Понадобятся только кубик и любые фишки.
+    </p>
+
+    <span class="card-button coming">
+        Скоро появится
+    </span>
+</section>
+
+<section class="card">
+    <h2>🛡️ Безопасность</h2>
+    <p>
+        Здесь расскажем родителям,
+        как устроена детская часть проекта
+        и какие принципы безопасности мы соблюдаем.
+    </p>
+</section>
+
+<section class="card">
+    <h2>💌 Обратная связь</h2>
+    <p>
+        Нашли ошибку, появилась идея
+        или ребёнку особенно понравилась какая-то игра?
+        Нам будет очень полезно это узнать.
+    </p>
+</section>
+
+<section class="card">
+    <h2>🔐 Дополнительные приключения</h2>
+    <p>
+        Новые истории, большие игры,
+        дополнительные простые раскраски
+        и другие материалы Волшебной долины.
+    </p>
+</section>
+
+</div>
+
+</main>
+
+</body>
+</html>

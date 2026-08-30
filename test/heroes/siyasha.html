@@ -8,20 +8,106 @@
 <title>Сияша — Медослав и его друзья</title>
 
 <link rel="stylesheet" href="../style.css">
+
+<style>
+
+/* ===== ШАПКА СИЯШИ ===== */
+
+.siyasha-site-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:10px 16px;
+    background:linear-gradient(#f7ebca,#e7ce92);
+    border-bottom:2px solid #b98d4d;
+}
+
+.siyasha-brand{
+    flex:0 0 240px;
+    text-decoration:none;
+    color:#62421d;
+    text-align:center;
+    font-size:23px;
+    line-height:1.05;
+}
+
+.siyasha-brand small{
+    display:block;
+    margin-top:4px;
+    font-size:14px;
+}
+
+.siyasha-topnav{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    margin-right:100px;
+}
+
+.siyasha-topnav a{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:58px;
+    padding:6px;
+    color:#49351f;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:16px;
+    border-left:1px solid rgba(100,70,30,.18);
+}
+
+.siyasha-topnav a:hover{
+    background:rgba(255,255,255,.35);
+}
+
+@media(max-width:850px){
+
+    .siyasha-site-header{
+        display:block;
+        padding:8px;
+    }
+
+    .siyasha-brand{
+        display:block;
+        margin-bottom:7px;
+    }
+
+    .siyasha-topnav{
+        display:flex;
+        overflow-x:auto;
+    }
+
+    .siyasha-topnav a{
+        min-width:115px;
+    }
+}
+
+</style>
+
 </head>
 
 <body>
 
-<header>
 
-<h1>⭐ Сияша</h1>
+<header class="siyasha-site-header">
 
-<nav>
+    <a class="siyasha-brand" href="../index.html">
+        🍯 <strong>МЕДОСЛАВ</strong>
+        <small>и его друзья</small>
+    </a>
 
-<a href="siyasha.html">⭐ Герой</a>
-</nav>
+    <nav class="siyasha-topnav">
+        <a href="../index.html">🗺️ Карта</a>
+        <a href="../heroes/index.html">🧙 Герои</a>
+        <a href="../stories/index.html">📖 Истории</a>
+        <a href="../games/index.html">🎮 Игры</a>
+        <a href="../coloring/index.html">⭐ Раскраски</a>
+        <a href="../parents/index.html">🌿 Родителям</a>
+    </nav>
 
 </header>
+
 
 <main>
 
@@ -68,6 +154,9 @@ style="position:absolute;left:39.0%;top:62.5%;width:28.0%;height:12.0%;display:b
 <a href="../coloring/siyasha_choice.html"
 aria-label="Раскраска siyasha"
 style="position:absolute;left:70.5%;top:62.5%;width:27.5%;height:12.0%;display:block;z-index:50;border-radius:30px;"></a>
+
+
+
 
 </div>
 
