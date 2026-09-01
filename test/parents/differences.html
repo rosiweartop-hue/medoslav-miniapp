@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Найди 5 отличий — Развивашки Волшебной долины</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+.header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:26px 15px;
+}
+
+.header h1{
+    margin:0;
+    font-size:34px;
+}
+
+.header p{
+    margin:10px auto 0;
+    max-width:720px;
+    font-size:18px;
+    line-height:1.5;
+}
+
+.main{
+    width:min(1050px,94%);
+    margin:28px auto 50px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.card{
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+
+.card h2{
+    margin-top:0;
+    color:#6b8e23;
+    font-size:22px;
+}
+
+.card p{
+    font-size:16px;
+    line-height:1.5;
+}
+
+.soon{
+    display:inline-block;
+    margin-top:12px;
+    padding:10px 17px;
+    border-radius:24px;
+    background:#d9dfc6;
+    color:#667050;
+    font-weight:bold;
+}
+
+.back{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    margin:32px auto 0;
+    padding:13px 22px;
+    border-radius:28px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    text-align:center;
+}
+
+@media(max-width:700px){
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .header h1{
+        font-size:28px;
+    }
+
+    .header p{
+        font-size:16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>🔍 Найди 5 отличий</h1>
+    <p>
+        Четыре разных задания для внимательных исследователей.
+        В каждой паре картинок спрятано ровно 5 отличий.
+    </p>
+</header>
+
+<main class="main">
+
+<div class="cards">
+
+<section class="card">
+    <h2>🐱 Задание №1 — Котёнок в саду</h2>
+    <p>
+        Сравни две картинки и найди 5 отличий
+        в уютном саду с котёнком.
+    </p>
+    <a class="soon"
+       href="diff-cat.html"
+       style="background:#6b8e23;color:white;text-decoration:none;">
+        Открыть
+    </a>
+</section>
+
+<section class="card">
+    <h2>🚂 Задание №2 — Весёлый поезд</h2>
+    <p>
+        Посмотри внимательно на поезд,
+        вагоны и всё вокруг. Найди 5 отличий.
+    </p>
+    <span class="soon">Скоро</span>
+</section>
+
+<section class="card">
+    <h2>🏖️ Задание №3 — День на пляже</h2>
+    <p>
+        На пляже что-то изменилось.
+        Сможешь заметить все 5 отличий?
+    </p>
+    <span class="soon">Скоро</span>
+</section>
+
+<section class="card">
+    <h2>🦊 Задание №4 — Лесная полянка</h2>
+    <p>
+        В лесу спрятались пять маленьких изменений.
+        Найди их все.
+    </p>
+    <span class="soon">Скоро</span>
+</section>
+
+
+
+</div>
+
+<a class="back" href="printables.html">
+    ← Вернуться к развивашкам
+</a>
+
+</main>
+
+</body>
+</html>

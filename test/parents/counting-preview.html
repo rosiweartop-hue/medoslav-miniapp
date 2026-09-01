@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Счёт и числа — просмотр задания</title>
+
+<style>
+*{box-sizing:border-box;}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:16px;
+}
+
+header h1{
+    margin:0;
+    font-size:25px;
+}
+
+.viewer{
+    min-height:calc(100vh - 155px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:14px;
+}
+
+.viewer img{
+    display:block;
+    max-width:92vw;
+    max-height:75vh;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(0,0,0,.15);
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:0 12px 22px;
+}
+
+.actions a{
+    padding:11px 18px;
+    border-radius:24px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔢 Сосчитай и выбери цифру</h1>
+</header>
+
+<div class="viewer">
+    <img id="sheet" alt="Задание Счёт и числа">
+</div>
+
+<div class="actions">
+    <a id="download" download>📥 Скачать A4</a>
+    <a href="counting.html">← Назад к заданиям</a>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const sheet = params.get("sheet");
+
+const files = {
+    "1":{
+        src:"assets/counting-1.png",
+        name:"schet-i-cifry-list-1-A4.png"
+    },
+    "2":{
+        src:"assets/counting-2.png",
+        name:"schet-i-cifry-list-2-A4.png"
+    }
+};
+
+const selected = files[sheet] || files["1"];
+
+document.getElementById("sheet").src = selected.src;
+
+const download = document.getElementById("download");
+download.href = selected.src;
+download.setAttribute("download", selected.name);
+</script>
+
+</body>
+</html>

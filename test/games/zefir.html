@@ -149,6 +149,24 @@
 Уровень <span id="levelText">1</span> из 8
 </div>
 
+
+<button id="repeatVoiceBtn" type="button"
+        style="
+            display:block;
+            margin:12px auto;
+            padding:11px 20px;
+            border:0;
+            border-radius:24px;
+            background:#2f6fed;
+            color:white;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 4px 10px rgba(0,0,0,.18);
+        ">
+    🔊 Повторить задание
+</button>
+
 <div class="message" id="message">
 Возьми Зефира пальцем ☁️
 </div>
@@ -216,7 +234,7 @@ function createLevel(){
     cloud.style.left = "35px";
     cloud.style.top = "30px";
 
-    message.textContent = "Возьми Зефира пальцем ☁️";
+    message.textContent = "Веди Зефира пальцем ☁️";
 
     const count = numberOfFlowers();
     const spots = shuffle(positions).slice(0,count);
@@ -433,6 +451,240 @@ createLevel();
    ">
 ← К Зефиру
 </a>
+
+
+
+<script>
+/* ===== ДЕТСКАЯ ОЗВУЧКА ЗЕФИРА ===== */
+(() => {
+
+    const repeatBtn = document.getElementById("repeatVoiceBtn");
+    const gameMessage = document.getElementById("message");
+
+    const voices = {
+        task:   new Audio("../sounds/voices/zefir/task.m4a"),
+        win:    new Audio("../sounds/voices/zefir/win.m4a"),
+        wrong:  new Audio("../sounds/voices/zefir/wrong.mp3"),
+        finish: new Audio("../sounds/voices/zefir/finish.m4a")
+    };
+
+    Object.values(voices).forEach(audio => {
+        audio.preload = "auto";
+        audio.volume = 1;
+    });
+
+    let currentVoice = null;
+    let firstTaskPlayed = false;
+
+    function soundIsEnabled() {
+        const value = localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    function stopVoice() {
+        if (!currentVoice) return;
+
+        try {
+            currentVoice.pause();
+            currentVoice.currentTime = 0;
+        } catch (e) {}
+
+        currentVoice = null;
+    }
+
+    function playVoice(audio) {
+        if (!soundIsEnabled() || !audio) return;
+
+        stopVoice();
+
+        try {
+            audio.currentTime = 0;
+            currentVoice = audio;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function playTask() {
+        playVoice(voices.task);
+        firstTaskPlayed = true;
+    }
+
+    if (repeatBtn) {
+        repeatBtn.addEventListener("click", playTask);
+    }
+
+    document.addEventListener(
+        "pointerdown",
+        () => {
+            if (!firstTaskPlayed) {
+                playTask();
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    setTimeout(() => {
+        if (!firstTaskPlayed) {
+            playTask();
+        }
+    }, 700);
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text = gameMessage.textContent.trim();
+
+            if (!text) return;
+
+            /*
+               Ошибка может повторяться несколько раз,
+               поэтому одинаковую фразу ошибки разрешаем.
+            */
+            if (
+                text === previousText &&
+                !text.includes("дождик пока не нужен")
+            ) {
+                return;
+            }
+
+            previousText = text;
+
+            if (text.includes("Цветок снова расцвёл")) {
+                playVoice(voices.win);
+                return;
+            }
+
+            if (text.includes("дождик пока не нужен")) {
+                playVoice(voices.wrong);
+                return;
+            }
+
+            if (text.includes("напоил весь волшебный сад")) {
+                playVoice(voices.finish);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
+
+
+
+<script>
+/* ===== ЗВУК ДОЖДЯ ЗЕФИРА ===== */
+(() => {
+
+    const gameMessage = document.getElementById("message");
+
+    const rainAudio =
+        new Audio("../sounds/games/zefir-rain.mp3");
+
+    rainAudio.preload = "auto";
+    rainAudio.volume = 0.8;
+
+    let rainTimer = null;
+
+    function soundIsEnabled() {
+        const value =
+            localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    /* Подготавливаем звук первым касанием на телефоне */
+    document.addEventListener(
+        "pointerdown",
+        async () => {
+            try {
+                rainAudio.volume = 0;
+                await rainAudio.play();
+
+                rainAudio.pause();
+                rainAudio.currentTime = 0;
+                rainAudio.volume = 0.8;
+            } catch (e) {
+                rainAudio.volume = 0.8;
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    function playRain() {
+
+        if (!soundIsEnabled()) return;
+
+        try {
+            rainAudio.pause();
+            rainAudio.currentTime = 0;
+            rainAudio.volume = 0.8;
+
+            rainAudio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text =
+                gameMessage.textContent.trim();
+
+            if (!text || text === previousText)
+                return;
+
+            previousText = text;
+
+            clearTimeout(rainTimer);
+
+            if (
+                text.includes("Цветок снова расцвёл") ||
+                text.includes("напоил весь волшебный сад")
+            ) {
+                rainTimer = setTimeout(() => {
+                    playRain();
+                }, 2000);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
 
 </body>
 </html>

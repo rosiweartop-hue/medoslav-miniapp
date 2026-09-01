@@ -96,6 +96,44 @@ svg{
     color:white;
 }
 </style>
+
+<style>
+/* ===== ЯРКАЯ КНОПКА ОТМЕНЫ ===== */
+#undoBtn{
+    background:#4267b2 !important;
+    color:white !important;
+    border:none !important;
+    opacity:1 !important;
+    font-weight:700 !important;
+    box-shadow:0 3px 8px rgba(0,0,0,.18) !important;
+}
+
+#undoBtn:disabled{
+    background:#8fa4cf !important;
+    color:white !important;
+    opacity:.75 !important;
+}
+</style>
+
+
+<style>
+#undoBtn{
+    background:#2f6fed !important;
+    color:#fff !important;
+    border:none !important;
+    opacity:1 !important;
+    font-weight:700 !important;
+    padding:12px 20px !important;
+    box-shadow:0 4px 10px rgba(0,0,0,.20) !important;
+}
+
+#undoBtn:disabled{
+    background:#8aa8eb !important;
+    color:#fff !important;
+    opacity:1 !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -361,6 +399,11 @@ stroke-width="7"
 
 <div class="buttons">
 
+
+<button class="btn undo" id="undoBtn" type="button">
+↩ Отменить
+</button>
+
 <button class="btn reset" id="resetBtn">
 🔄 Начать заново
 </button>
@@ -445,6 +488,160 @@ document.getElementById("resetBtn")
    ">
 ← К Медославу
 </a>
+
+
+<script>
+/* ===== ОТМЕНА ПОСЛЕДНЕГО ДЕЙСТВИЯ ===== */
+(() => {
+    const undoCanvas = document.getElementById("canvas");
+    const undoBtn = document.getElementById("undoBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    if (!undoCanvas || !undoBtn) return;
+
+    const undoCtx = undoCanvas.getContext("2d");
+    let undoSnapshot = null;
+
+    function saveUndoState() {
+        if (!undoCanvas.width || !undoCanvas.height) return;
+
+        try {
+            undoSnapshot = undoCtx.getImageData(
+                0,
+                0,
+                undoCanvas.width,
+                undoCanvas.height
+            );
+
+            undoBtn.disabled = false;
+        } catch (e) {
+            console.warn("Не удалось сохранить состояние", e);
+        }
+    }
+
+    /* Сохраняем состояние перед новой заливкой */
+    undoCanvas.addEventListener(
+        "pointerdown",
+        saveUndoState,
+        true
+    );
+
+    /* Можно отменить и "Начать заново" */
+    if (resetBtn) {
+        resetBtn.addEventListener(
+            "pointerdown",
+            saveUndoState,
+            true
+        );
+    }
+
+    undoBtn.addEventListener("click", () => {
+        if (!undoSnapshot) return;
+
+        undoCtx.putImageData(
+            undoSnapshot,
+            0,
+            0
+        );
+
+        undoSnapshot = null;
+        undoBtn.disabled = true;
+    });
+
+    undoBtn.disabled = true;
+})();
+</script>
+
+
+<script>
+/* ===== SVG-ОТМЕНА ДЛЯ ПЧЁЛКИ МЕДОСЛАВА ===== */
+(() => {
+
+    const undoBtnBee = document.getElementById("undoBtn");
+    const resetBtnBee = document.getElementById("resetBtn");
+
+    if (!undoBtnBee) return;
+    if (typeof paintables === "undefined") return;
+
+    let lastBeeAction = null;
+
+    /* Запоминаем цвет детали ДО раскрашивания */
+    paintables.forEach(part => {
+
+        part.addEventListener("pointerdown", () => {
+
+            lastBeeAction = {
+                type: "paint",
+                part: part,
+                oldFill: part.getAttribute("fill")
+            };
+
+            undoBtnBee.disabled = false;
+
+        }, true);
+
+    });
+
+    /* Запоминаем всю раскраску перед "Начать заново" */
+    if (resetBtnBee) {
+
+        resetBtnBee.addEventListener("pointerdown", () => {
+
+            lastBeeAction = {
+                type: "reset",
+                fills: Array.from(paintables).map(part => ({
+                    part: part,
+                    fill: part.getAttribute("fill")
+                }))
+            };
+
+            undoBtnBee.disabled = false;
+
+        }, true);
+
+    }
+
+    undoBtnBee.addEventListener("click", () => {
+
+        if (!lastBeeAction) return;
+
+        if (lastBeeAction.type === "paint") {
+
+            if (lastBeeAction.oldFill === null) {
+                lastBeeAction.part.removeAttribute("fill");
+            } else {
+                lastBeeAction.part.setAttribute(
+                    "fill",
+                    lastBeeAction.oldFill
+                );
+            }
+
+        }
+
+        if (lastBeeAction.type === "reset") {
+
+            lastBeeAction.fills.forEach(item => {
+
+                if (item.fill === null) {
+                    item.part.removeAttribute("fill");
+                } else {
+                    item.part.setAttribute(
+                        "fill",
+                        item.fill
+                    );
+                }
+
+            });
+
+        }
+
+        lastBeeAction = null;
+        undoBtnBee.disabled = true;
+
+    });
+
+})();
+</script>
 
 </body>
 </html>

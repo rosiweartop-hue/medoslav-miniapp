@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Лабиринты Пчёлки — Медослав и его друзья</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+.header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:26px 15px;
+}
+
+.header h1{
+    margin:0;
+    font-size:34px;
+}
+
+.header p{
+    margin:10px auto 0;
+    max-width:720px;
+    font-size:18px;
+    line-height:1.5;
+}
+
+.main{
+    width:min(950px,94%);
+    margin:28px auto 50px;
+}
+
+.maze{
+    background:white;
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+
+.maze h2{
+    margin-top:0;
+    color:#6b8e23;
+    font-size:24px;
+}
+
+.maze p{
+    font-size:17px;
+    line-height:1.55;
+}
+
+.preview{
+    margin-top:18px;
+    min-height:260px;
+    border:3px dashed #cbd8ad;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+    color:#728054;
+    font-size:18px;
+    background:#f8fbf3;
+}
+
+.back{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    margin:28px auto 0;
+    padding:13px 22px;
+    border-radius:28px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    text-align:center;
+}
+
+@media(max-width:650px){
+    .header h1{
+        font-size:28px;
+    }
+
+    .header p,
+    .maze p,
+    .preview{
+        font-size:16px;
+    }
+}
+
+.maze-preview{
+    margin-top:18px;
+    text-align:center;
+}
+
+.maze-preview img{
+    display:block;
+    width:100%;
+    max-width:650px;
+    height:auto;
+    margin:0 auto;
+    border:1px solid #d5d5d5;
+    border-radius:14px;
+    background:white;
+}
+
+.maze-actions{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:16px;
+}
+
+.maze-actions a{
+    display:inline-block;
+    padding:11px 18px;
+    border-radius:24px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>🐝 Лабиринты Пчёлки</h1>
+    <p>
+        Два задания для печати на А4.
+        Помоги Пчёлке найти правильную дорогу!
+    </p>
+</header>
+
+<main class="main">
+
+<section class="maze">
+    <h2>🐝 Лабиринт №1 — Найди Медослава</h2>
+    <p>
+        Пчёлка заблудилась в Волшебной долине.
+        Проведи её по правильной дорожке к Медославу.
+    </p>
+
+    <div class="maze-preview">
+        <img
+            src="assets/maze-bee-1.svg"
+            alt="Лабиринт Пчёлка ищет Медослава">
+    </div>
+
+    <div class="maze-actions">
+        <a href="assets/maze-bee-1.svg" target="_blank">
+            🖨️ Открыть для печати
+        </a>
+
+        <a href="assets/maze-bee-1.svg" download="labirint-pchelka-medoslav.svg">
+            ⬇️ Скачать
+        </a>
+    </div>
+</section>
+
+<section class="maze">
+    <h2>🍯 Лабиринт №2 — Дорога к улью</h2>
+    <p>
+        Пчёлке пора возвращаться домой.
+        Помоги ей пройти запутанные дорожки и добраться до улья.
+    </p>
+
+    <div class="preview">
+        Здесь будет второй лабиринт А4<br>
+        «Пчёлка ищет улей»
+    </div>
+</section>
+
+<a class="back" href="mazes.html">
+    ← Вернуться к лабиринтам
+</a>
+
+</main>
+
+</body>
+</html>

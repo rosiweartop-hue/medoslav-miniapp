@@ -102,6 +102,25 @@ canvas{
     color:white;
 }
 </style>
+
+<style>
+/* ===== ЯРКАЯ КНОПКА ОТМЕНЫ ===== */
+#undoBtn{
+    background:#4267b2 !important;
+    color:white !important;
+    border:none !important;
+    opacity:1 !important;
+    font-weight:700 !important;
+    box-shadow:0 3px 8px rgba(0,0,0,.18) !important;
+}
+
+#undoBtn:disabled{
+    background:#8fa4cf !important;
+    color:white !important;
+    opacity:.75 !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -167,6 +186,11 @@ style="background:#FFFFFF"></button>
 </div>
 
 <div class="buttons">
+
+
+<button class="btn undo" id="undoBtn" type="button">
+↩ Отменить
+</button>
 
 <button class="btn reset" id="resetBtn">
 🔄 Начать заново
@@ -474,6 +498,69 @@ document.getElementById("resetBtn")
    ">
 ← К Хмурдану
 </a>
+
+
+<script>
+/* ===== ОТМЕНА ПОСЛЕДНЕГО ДЕЙСТВИЯ ===== */
+(() => {
+    const undoCanvas = document.getElementById("canvas");
+    const undoBtn = document.getElementById("undoBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    if (!undoCanvas || !undoBtn) return;
+
+    const undoCtx = undoCanvas.getContext("2d");
+    let undoSnapshot = null;
+
+    function saveUndoState() {
+        if (!undoCanvas.width || !undoCanvas.height) return;
+
+        try {
+            undoSnapshot = undoCtx.getImageData(
+                0,
+                0,
+                undoCanvas.width,
+                undoCanvas.height
+            );
+
+            undoBtn.disabled = false;
+        } catch (e) {
+            console.warn("Не удалось сохранить состояние", e);
+        }
+    }
+
+    /* Сохраняем состояние перед новой заливкой */
+    undoCanvas.addEventListener(
+        "pointerdown",
+        saveUndoState,
+        true
+    );
+
+    /* Можно отменить и "Начать заново" */
+    if (resetBtn) {
+        resetBtn.addEventListener(
+            "pointerdown",
+            saveUndoState,
+            true
+        );
+    }
+
+    undoBtn.addEventListener("click", () => {
+        if (!undoSnapshot) return;
+
+        undoCtx.putImageData(
+            undoSnapshot,
+            0,
+            0
+        );
+
+        undoSnapshot = null;
+        undoBtn.disabled = true;
+    });
+
+    undoBtn.disabled = true;
+})();
+</script>
 
 </body>
 </html>

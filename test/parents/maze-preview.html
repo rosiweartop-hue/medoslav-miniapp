@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Просмотр лабиринта</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:14px;
+}
+
+header h1{
+    margin:0;
+    font-size:24px;
+}
+
+.viewer{
+    min-height:calc(100vh - 140px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:14px;
+}
+
+.viewer img{
+    display:block;
+    max-width:92vw;
+    max-height:72vh;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(0,0,0,.15);
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:0 12px 22px;
+}
+
+.actions a{
+    padding:11px 18px;
+    border-radius:24px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌀 Просмотр лабиринта</h1>
+</header>
+
+<div class="viewer">
+    <img id="mazeImage" alt="Лабиринт">
+</div>
+
+<div class="actions">
+    <a id="downloadButton" download>📥 Скачать A4</a>
+    <a href="mazes.html">← Назад к лабиринтам</a>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const maze = params.get("maze");
+
+const files = {
+    bee: {
+        src: "assets/maze-bee.png",
+        name: "labirint-pchelka-medoslav.png"
+    },
+    prutik: {
+        src: "assets/maze-prutik.png",
+        name: "labirint-prutik-more.png"
+    }
+};
+
+const selected = files[maze] || files.bee;
+
+document.getElementById("mazeImage").src = selected.src;
+
+const download = document.getElementById("downloadButton");
+download.href = selected.src;
+download.setAttribute("download", selected.name);
+</script>
+
+</body>
+</html>

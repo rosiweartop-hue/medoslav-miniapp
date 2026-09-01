@@ -127,6 +127,24 @@
 Уровень <span id="level">1</span> из 5
 </div>
 
+
+<button id="repeatVoiceBtn" type="button"
+        style="
+            display:block;
+            margin:12px auto;
+            padding:11px 20px;
+            border:0;
+            border-radius:24px;
+            background:#2f6fed;
+            color:white;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 4px 10px rgba(0,0,0,.18);
+        ">
+    🔊 Повторить задание
+</button>
+
 <div class="message" id="message">
 Нажми «Показать заклинание»
 </div>
@@ -319,6 +337,244 @@ startLevel();
    ">
 ← К Хмурдану
 </a>
+
+
+
+<script>
+/* ===== ДЕТСКАЯ ОЗВУЧКА ХМУРДАНА ===== */
+(() => {
+
+    const repeatBtn = document.getElementById("repeatVoiceBtn");
+    const gameMessage = document.getElementById("message");
+
+    const voices = {
+        task:   new Audio("../sounds/voices/khmurdan/task.m4a"),
+        win:    new Audio("../sounds/voices/khmurdan/win.m4a"),
+        wrong:  new Audio("../sounds/voices/khmurdan/wrong.mp3"),
+        finish: new Audio("../sounds/voices/khmurdan/finish5.m4a")
+    };
+
+    Object.values(voices).forEach(audio => {
+        audio.preload = "auto";
+        audio.volume = 1;
+    });
+
+    let currentVoice = null;
+    let firstTaskPlayed = false;
+
+    function soundIsEnabled() {
+        const value = localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    function stopVoice() {
+        if (!currentVoice) return;
+
+        try {
+            currentVoice.pause();
+            currentVoice.currentTime = 0;
+        } catch (e) {}
+
+        currentVoice = null;
+    }
+
+    function playVoice(audio) {
+        if (!soundIsEnabled() || !audio) return;
+
+        stopVoice();
+
+        try {
+            audio.currentTime = 0;
+            currentVoice = audio;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function playTask() {
+        playVoice(voices.task);
+        firstTaskPlayed = true;
+    }
+
+    if (repeatBtn) {
+        repeatBtn.addEventListener("click", playTask);
+    }
+
+    document.addEventListener(
+        "pointerdown",
+        () => {
+            if (!firstTaskPlayed) {
+                playTask();
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    setTimeout(() => {
+        if (!firstTaskPlayed) {
+            playTask();
+        }
+    }, 700);
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text = gameMessage.textContent.trim();
+
+            if (!text) return;
+
+            /* Ошибка может повторяться несколько раз */
+            if (
+                text === previousText &&
+                !text.includes("Невер") &&
+                !text.includes("ошиб") &&
+                !text.includes("Попробуй")
+            ) {
+                return;
+            }
+
+            previousText = text;
+
+            if (text.includes("Верно")) {
+                playVoice(voices.win);
+                return;
+            }
+
+            if (
+                text.includes("Невер") ||
+                text.includes("ошиб") ||
+                text.includes("Попробуй")
+            ) {
+                playVoice(voices.wrong);
+                return;
+            }
+
+            if (text.includes("прошёл все 5")) {
+                playVoice(voices.finish);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
+
+
+
+<script>
+/* ===== ЗВУК ЗАКЛИНАНИЯ ХМУРДАНА ===== */
+(() => {
+
+    const gameMessage = document.getElementById("message");
+
+    const spellAudio =
+        new Audio("../sounds/games/khmurdan-spell.mp3");
+
+    spellAudio.preload = "auto";
+    spellAudio.volume = 0.9;
+
+    function soundIsEnabled() {
+        const value =
+            localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    /* Подготавливаем звук первым касанием на телефоне */
+    document.addEventListener(
+        "pointerdown",
+        async () => {
+            try {
+                spellAudio.volume = 0;
+                await spellAudio.play();
+
+                spellAudio.pause();
+                spellAudio.currentTime = 0;
+                spellAudio.volume = 0.9;
+            } catch (e) {
+                spellAudio.volume = 0.9;
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    function playSpellSound() {
+
+        if (!soundIsEnabled()) return;
+
+        try {
+            spellAudio.pause();
+            spellAudio.currentTime = 0;
+            spellAudio.volume = 0.9;
+
+            spellAudio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer =
+            new MutationObserver(() => {
+
+                const text =
+                    gameMessage.textContent.trim();
+
+                if (!text || text === previousText)
+                    return;
+
+                previousText = text;
+
+                if (text.includes("Верно")) {
+
+                    /*
+                       Сначала звучит:
+                       "Верно! Отличная память!"
+
+                       Затем магический эффект.
+                    */
+                    setTimeout(() => {
+                        playSpellSound();
+                    }, 1500);
+                }
+
+            });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
 
 </body>
 </html>

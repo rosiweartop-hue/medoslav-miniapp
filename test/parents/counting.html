@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Счёт и числа — Развивашки Волшебной долины</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef8ef;
+    color:#433322;
+}
+
+.header{
+    background:#6b8e23;
+    color:white;
+    text-align:center;
+    padding:26px 15px;
+}
+
+.header h1{
+    margin:0;
+    font-size:34px;
+}
+
+.header p{
+    margin:10px auto 0;
+    max-width:720px;
+    font-size:18px;
+    line-height:1.5;
+}
+
+.main{
+    width:min(950px,94%);
+    margin:28px auto 50px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.card{
+    background:white;
+    border-radius:22px;
+    padding:24px;
+    box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+
+.card h2{
+    margin-top:0;
+    color:#6b8e23;
+    font-size:24px;
+}
+
+.card p{
+    font-size:17px;
+    line-height:1.55;
+}
+
+.examples{
+    margin:16px 0 0;
+    padding-left:22px;
+    line-height:1.7;
+}
+
+.soon{
+    display:inline-block;
+    margin-top:16px;
+    padding:10px 18px;
+    border-radius:24px;
+    background:#d9dfc6;
+    color:#667050;
+    font-weight:bold;
+}
+
+.back{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    margin:30px auto 0;
+    padding:13px 22px;
+    border-radius:28px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    text-align:center;
+}
+
+@media(max-width:700px){
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .header h1{
+        font-size:28px;
+    }
+
+    .header p,
+    .card p{
+        font-size:16px;
+    }
+}
+
+.sheet-preview{
+    display:block;
+    width:100%;
+    max-width:390px;
+    height:auto;
+    margin:18px auto 0;
+    border:1px solid #d7ddca;
+    border-radius:14px;
+    background:white;
+}
+
+.sheet-actions{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:16px;
+}
+
+.sheet-actions a{
+    display:inline-block;
+    padding:10px 17px;
+    border-radius:24px;
+    background:#6b8e23;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>🔢 Счёт и числа</h1>
+    <p>
+        Посчитай предметы и выбери правильную цифру.
+        Два задания для печати на А4.
+    </p>
+</header>
+
+<main class="main">
+
+<div class="cards">
+
+
+<section class="card">
+    <h2>🔢 Лист №1 — Сосчитай и выбери</h2>
+
+    <p>
+        Четыре задания: пчёлки, звёзды,
+        яблоки и цветы.
+    </p>
+
+    <img class="sheet-preview"
+         src="assets/counting-1.png"
+         alt="Счёт и числа — лист 1">
+
+    <div class="sheet-actions">
+        <a href="counting-preview.html?sheet=1">👁 Открыть</a>
+
+        <a href="assets/counting-1.png"
+           download="schet-i-cifry-list-1-A4.png">
+            📥 Скачать A4
+        </a>
+    </div>
+</section>
+
+
+
+<section class="card">
+    <h2>🔢 Лист №2 — Сосчитай и выбери</h2>
+
+    <p>
+        Ещё четыре задания: мёд, бабочки,
+        облака и грибочки.
+    </p>
+
+    <img class="sheet-preview"
+         src="assets/counting-2.png"
+         alt="Счёт и числа — лист 2">
+
+    <div class="sheet-actions">
+        <a href="counting-preview.html?sheet=2">👁 Открыть</a>
+
+        <a href="assets/counting-2.png"
+           download="schet-i-cifry-list-2-A4.png">
+            📥 Скачать A4
+        </a>
+    </div>
+</section>
+
+
+</div>
+
+<a class="back" href="printables.html">
+    ← Вернуться к развивашкам
+</a>
+
+</main>
+
+</body>
+</html>

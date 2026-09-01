@@ -96,6 +96,24 @@
 Уровень <span id="levelText">1</span> из 8
 </div>
 
+
+<button id="repeatVoiceBtn" type="button"
+        style="
+            display:block;
+            margin:12px auto;
+            padding:11px 20px;
+            border:0;
+            border-radius:24px;
+            background:#2f6fed;
+            color:white;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 4px 10px rgba(0,0,0,.18);
+        ">
+    🔊 Повторить задание
+</button>
+
 <div class="message" id="message">
 Поставь палец на Прутика 🌳
 </div>
@@ -528,6 +546,258 @@ resetPlayer();
    ">
 ← К Прутику
 </a>
+
+
+
+<script>
+/* ===== ДЕТСКАЯ ОЗВУЧКА ПРУТИКА ===== */
+(() => {
+
+    const repeatBtn = document.getElementById("repeatVoiceBtn");
+    const gameMessage = document.getElementById("message");
+
+    const voices = {
+        task:   new Audio("../sounds/voices/prutik/task.m4a"),
+        win:    new Audio("../sounds/voices/prutik/win.m4a"),
+        finish: new Audio("../sounds/voices/prutik/finish.m4a")
+    };
+
+    Object.values(voices).forEach(audio => {
+        audio.preload = "auto";
+        audio.volume = 1;
+    });
+
+    let currentVoice = null;
+    let firstTaskPlayed = false;
+
+    function soundIsEnabled() {
+        const value = localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    function stopVoice() {
+        if (!currentVoice) return;
+
+        try {
+            currentVoice.pause();
+            currentVoice.currentTime = 0;
+        } catch (e) {}
+
+        currentVoice = null;
+    }
+
+    function playVoice(audio) {
+        if (!soundIsEnabled() || !audio) return;
+
+        stopVoice();
+
+        try {
+            audio.currentTime = 0;
+            currentVoice = audio;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function playTask() {
+        playVoice(voices.task);
+        firstTaskPlayed = true;
+    }
+
+    if (repeatBtn) {
+        repeatBtn.addEventListener("click", playTask);
+    }
+
+    document.addEventListener(
+        "pointerdown",
+        () => {
+            if (!firstTaskPlayed) {
+                playTask();
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    setTimeout(() => {
+        if (!firstTaskPlayed) {
+            playTask();
+        }
+    }, 700);
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text = gameMessage.textContent.trim();
+
+            if (!text) return;
+
+            /*
+               Подсказка "Начни с Прутика" может
+               повторяться несколько раз.
+            */
+            if (
+                text === previousText &&
+                !text.includes("Начни с Прутика")
+            ) {
+                return;
+            }
+
+            previousText = text;
+
+            if (text.includes("Начни с Прутика")) {
+                playVoice(voices.task);
+                return;
+            }
+
+            if (text.includes("стал ещё ближе к морю")) {
+                playVoice(voices.win);
+                return;
+            }
+
+            if (text.includes("прошёл весь путь")) {
+                playVoice(voices.finish);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
+
+
+
+<script>
+/* ===== ЗВУК МОРЯ ПРУТИКА ===== */
+(() => {
+
+    const gameMessage = document.getElementById("message");
+
+    const seaAudio =
+        new Audio("../sounds/games/prutik-sea.wav");
+
+    seaAudio.preload = "auto";
+    seaAudio.volume = 0.75;
+
+    let seaStopTimer = null;
+    let seaStartTimer = null;
+
+    function soundIsEnabled() {
+        const value =
+            localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    /* Подготавливаем звук на телефоне первым касанием */
+    document.addEventListener(
+        "pointerdown",
+        async () => {
+            try {
+                seaAudio.volume = 0;
+                await seaAudio.play();
+
+                seaAudio.pause();
+                seaAudio.currentTime = 0;
+                seaAudio.volume = 0.75;
+            } catch (e) {
+                seaAudio.volume = 0.75;
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    function playSea(duration) {
+
+        if (!soundIsEnabled()) return;
+
+        clearTimeout(seaStopTimer);
+
+        try {
+            seaAudio.pause();
+            seaAudio.currentTime = 0;
+            seaAudio.volume = 0.75;
+
+            seaAudio.play().catch(() => {});
+
+            seaStopTimer = setTimeout(() => {
+                seaAudio.pause();
+                seaAudio.currentTime = 0;
+            }, duration);
+
+        } catch (e) {}
+    }
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer =
+            new MutationObserver(() => {
+
+                const text =
+                    gameMessage.textContent.trim();
+
+                if (!text || text === previousText)
+                    return;
+
+                previousText = text;
+
+                clearTimeout(seaStartTimer);
+
+                /* Обычный пройденный уровень */
+                if (text.includes("стал ещё ближе к морю")) {
+
+                    seaStartTimer = setTimeout(() => {
+                        playSea(3000);
+                    }, 2000);
+
+                    return;
+                }
+
+                /* Финал игры */
+                if (text.includes("прошёл весь путь")) {
+
+                    seaStartTimer = setTimeout(() => {
+                        playSea(5000);
+                    }, 2000);
+                }
+
+            });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
 
 </body>
 </html>

@@ -197,6 +197,138 @@ display:block;
 </footer>
 
 
+
+
+
+
+<!-- ===== ВХОД В ВОЛШЕБНУЮ ДОЛИНУ ===== -->
+
+<style>
+#welcomeGate {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(10, 25, 50, 0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+#welcomeGate.hidden {
+    display: none;
+}
+
+#welcomeEnterBtn {
+    border: none;
+    border-radius: 30px;
+
+    padding: 16px 28px;
+
+    background: #2f6fed;
+    color: white;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.28);
+
+    cursor: pointer;
+}
+
+#welcomeEnterBtn:active {
+    transform: scale(.97);
+}
+</style>
+
+<div id="welcomeGate" class="hidden">
+    <button id="welcomeEnterBtn" type="button">
+        ✨ Войти в Волшебную долину
+    </button>
+</div>
+
+<script>
+(() => {
+
+    const SESSION_KEY = "medoslavWelcomeShown";
+
+    const gate =
+        document.getElementById("welcomeGate");
+
+    const enterBtn =
+        document.getElementById("welcomeEnterBtn");
+
+    const welcomeAudio =
+        new Audio("sounds/voices/welcome.mp3");
+
+    welcomeAudio.preload = "auto";
+    welcomeAudio.volume = 1;
+
+    function soundIsEnabled() {
+
+        const value =
+            localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    /*
+       Если ребёнок уже вошёл в Волшебную долину
+       в этой вкладке браузера — ничего не показываем.
+    */
+    if (
+        sessionStorage.getItem(SESSION_KEY) === "yes"
+    ) {
+        gate.classList.add("hidden");
+        return;
+    }
+
+    /*
+       Это первый вход.
+    */
+    gate.classList.remove("hidden");
+
+    enterBtn.addEventListener("click", async () => {
+
+        /*
+           Сразу запоминаем вход.
+           Поэтому при возвращении от героя
+           приветствие больше не появится.
+        */
+        sessionStorage.setItem(
+            SESSION_KEY,
+            "yes"
+        );
+
+        gate.classList.add("hidden");
+
+        if (!soundIsEnabled()) {
+            return;
+        }
+
+        try {
+            welcomeAudio.currentTime = 0;
+            await welcomeAudio.play();
+        } catch (e) {
+            console.log(
+                "Не удалось воспроизвести приветствие",
+                e
+            );
+        }
+
+    });
+
+})();
+</script>
+
 </body>
 
 </html>

@@ -138,6 +138,24 @@
 
 </div>
 
+
+<button id="repeatVoiceBtn" type="button"
+        style="
+            display:block;
+            margin:12px auto;
+            padding:11px 20px;
+            border:0;
+            border-radius:24px;
+            background:#2f6fed;
+            color:white;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 4px 10px rgba(0,0,0,.18);
+        ">
+    🔊 Повторить задание
+</button>
+
 <div class="message" id="message">
 Выбирай цветок 👆
 </div>
@@ -165,7 +183,10 @@ let score = 0;
 let hiddenBee = 0;
 let roundFinished = false;
 
+let wrongAttempts = 0;
+
 function startRound(){
+    wrongAttempts = 0;
     roundFinished = false;
     hiddenBee = Math.floor(Math.random() * 3);
 
@@ -218,9 +239,17 @@ flowers.forEach(flower => {
         }else{
 
             flower.classList.add("used");
-            flower.disabled = true;
+            /* flower остаётся доступным для повторной попытки */
 
-            message.textContent = "Здесь её нет. Попробуй другой цветок 😊";
+            wrongAttempts++;
+
+            if (wrongAttempts === 1) {
+                message.textContent =
+                    "Здесь её нет. Попробуй другой цветок 😊";
+            } else {
+                message.textContent =
+                    "Упс... попробуй ещё раз 😊";
+            }
         }
     });
 });
@@ -275,6 +304,256 @@ startRound();
    ">
 ← К Медославу
 </a>
+
+
+
+<script>
+/* ===== ДЕТСКАЯ ОЗВУЧКА МЕДОСЛАВА ===== */
+(() => {
+
+    const repeatBtn = document.getElementById("repeatVoiceBtn");
+    const gameMessage = document.getElementById("message");
+
+    const voices = {
+        task:   new Audio("../sounds/voices/medoslav/task.m4a"),
+        wrong:  new Audio("../sounds/voices/medoslav/wrong.m4a"),
+        retry:  new Audio("../sounds/voices/medoslav/retry.m4a"),
+        win:    new Audio("../sounds/voices/medoslav/win.m4a"),
+        finish: new Audio("../sounds/voices/medoslav/finish5.m4a")
+    };
+
+    Object.values(voices).forEach(audio => {
+        audio.preload = "auto";
+        audio.volume = 1;
+    });
+
+    let currentVoice = null;
+    let firstTaskPlayed = false;
+
+    function soundIsEnabled() {
+        const value = localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    function stopVoice() {
+        if (!currentVoice) return;
+
+        try {
+            currentVoice.pause();
+            currentVoice.currentTime = 0;
+        } catch (e) {}
+
+        currentVoice = null;
+    }
+
+    function playVoice(audio) {
+        if (!soundIsEnabled() || !audio) return;
+
+        stopVoice();
+
+        try {
+            audio.currentTime = 0;
+            currentVoice = audio;
+
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function playTask() {
+        playVoice(voices.task);
+        firstTaskPlayed = true;
+    }
+
+    if (repeatBtn) {
+        repeatBtn.addEventListener("click", playTask);
+    }
+
+    /*
+       На телефоне первая озвучка запускается
+       после первого касания, если автозапуск
+       браузер заблокировал.
+    */
+    document.addEventListener(
+        "pointerdown",
+        () => {
+            if (!firstTaskPlayed) {
+                playTask();
+            }
+        },
+        { once:true, capture:true }
+    );
+
+    /*
+       Пробуем автоматически запустить задание.
+    */
+    setTimeout(() => {
+        if (!firstTaskPlayed) {
+            playTask();
+        }
+    }, 700);
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text = gameMessage.textContent.trim();
+
+            if (!text) return;
+
+            /*
+               "Упс" может повторяться несколько раз,
+               поэтому для него одинаковый текст
+               разрешаем воспроизводить повторно.
+            */
+            if (
+                text === previousText &&
+                !text.includes("Упс")
+            ) {
+                return;
+            }
+
+            previousText = text;
+
+            if (text.includes("Нашлась")) {
+                playVoice(voices.win);
+                return;
+            }
+
+            if (text.includes("Здесь её нет")) {
+                playVoice(voices.wrong);
+                return;
+            }
+
+            if (text.includes("Упс")) {
+                playVoice(voices.retry);
+                return;
+            }
+
+            if (
+                text.includes("Отлично") &&
+                (
+                    text.includes("5") ||
+                    text.includes("пчёл")
+                )
+            ) {
+                playVoice(voices.finish);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
+
+
+
+
+
+
+<script>
+/* ===== ЗВУК ПЧЁЛКИ МЕДОСЛАВА ===== */
+(() => {
+
+    const gameMessage = document.getElementById("message");
+
+    const beeAudio = new Audio("../sounds/games/bee-buzz.wav");
+    beeAudio.preload = "auto";
+    beeAudio.volume = 0.9;
+
+    function soundIsEnabled() {
+        const value = localStorage.getItem("medoslavSound");
+
+        return ![
+            "off",
+            "false",
+            "0",
+            "muted"
+        ].includes(String(value).toLowerCase());
+    }
+
+    /* Разрешаем воспроизведение звука на телефоне */
+    document.addEventListener(
+        "pointerdown",
+        async () => {
+            try {
+                beeAudio.volume = 0;
+                await beeAudio.play();
+                beeAudio.pause();
+                beeAudio.currentTime = 0;
+                beeAudio.volume = 0.9;
+            } catch (e) {
+                beeAudio.volume = 0.9;
+            }
+        },
+        {once:true, capture:true}
+    );
+
+    function playBeeBuzz() {
+
+        if (!soundIsEnabled()) return;
+
+        try {
+            beeAudio.pause();
+            beeAudio.currentTime = 0;
+            beeAudio.volume = 0.9;
+
+            beeAudio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    if (gameMessage) {
+
+        let previousText = "";
+
+        const observer = new MutationObserver(() => {
+
+            const text = gameMessage.textContent.trim();
+
+            if (!text || text === previousText) return;
+            previousText = text;
+
+            if (text.toLowerCase().includes("нашлась")) {
+
+                /* После фразы ждём 2 секунды */
+                setTimeout(() => {
+                    playBeeBuzz();
+                }, 2000);
+            }
+
+        });
+
+        observer.observe(
+            gameMessage,
+            {
+                childList:true,
+                subtree:true,
+                characterData:true
+            }
+        );
+    }
+
+})();
+</script>
+
+
+
 
 </body>
 </html>
