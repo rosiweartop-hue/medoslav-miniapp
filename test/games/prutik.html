@@ -66,6 +66,7 @@
 .game-btn{
     background:#6b8e23;
     color:white;
+    touch-action:manipulation;
 }
 
 .back-btn{
@@ -277,7 +278,7 @@ function currentLevel(){
     return levels[level - 1];
 }
 
-const PATH_PADDING = 20;
+    const PATH_PADDING = 30;
 
 function expandedPathRect(r){
     return {
@@ -388,9 +389,10 @@ function draw(){
     /* дорожка */
     ctx.fillStyle = "#e4c08b";
 
-    currentLevel().path.forEach(r=>{
-        ctx.fillRect(r.x,r.y,r.w,r.h);
-    });
+     currentLevel().path.forEach(r=>{
+    const road = expandedPathRect(r);
+    ctx.fillRect(road.x,road.y,road.w,road.h);
+});   
 
     /* море */
     const sea = currentLevel().sea;
@@ -517,19 +519,21 @@ canvas.addEventListener("pointercancel",e=>{
     pointerId = null;
 });
 
-nextBtn.addEventListener("click",()=>{
+function goToNextLevel(){
 
     if(level < 8){
-
         level++;
-
     }else{
-
         level = 1;
     }
 
     levelText.textContent = level;
     resetPlayer();
+}
+
+nextBtn.addEventListener("pointerup", e => {
+    e.preventDefault();
+    goToNextLevel();
 });
 
 levelText.textContent = level;
