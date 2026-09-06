@@ -249,7 +249,7 @@ display:block;
         ✨ Войти в Волшебную долину
     </button>
 </div>
-
+<script src="script.js"></script>
 <script>
 (() => {
 
@@ -295,36 +295,83 @@ display:block;
        Это первый вход.
     */
     gate.classList.remove("hidden");
+enterBtn.addEventListener("click", async () => {
 
-    enterBtn.addEventListener("click", async () => {
+    sessionStorage.setItem(
+        SESSION_KEY,
+        "yes"
+    );
 
-        /*
-           Сразу запоминаем вход.
-           Поэтому при возвращении от героя
-           приветствие больше не появится.
-        */
-        sessionStorage.setItem(
-            SESSION_KEY,
-            "yes"
-        );
+    gate.classList.add("hidden");
 
-        gate.classList.add("hidden");
+    /*
+       Подготавливаем фоновую музыку
+       в момент реального касания ребёнка.
+       Это нужно для мобильных браузеров.
+    */
+    const bgMusic =
+        window.medoBackgroundMusic;
 
-        if (!soundIsEnabled()) {
-            return;
-        }
+    if (bgMusic) {
+
+        const normalVolume =
+            bgMusic.volume;
 
         try {
-            welcomeAudio.currentTime = 0;
-            await welcomeAudio.play();
-        } catch (e) {
-            console.log(
-                "Не удалось воспроизвести приветствие",
-                e
-            );
-        }
+            bgMusic.volume = 0;
 
-    });
+            bgMusic.play()
+                .then(() => {
+                    bgMusic.pause();
+                    bgMusic.volume =
+                        normalVolume;
+                })
+                .catch(() => {
+                    bgMusic.volume =
+                        normalVolume;
+                });
+
+        } catch (e) {
+            bgMusic.volume =
+                normalVolume;
+        }
+    }
+
+    /*
+       Если звук выключен —
+       просто считаем приветствие законченным.
+    */
+    if (!soundIsEnabled()) {
+
+        window.dispatchEvent(
+            new Event(
+                "medoslavWelcomeFinished"
+            )
+        );
+
+        return;
+    }
+
+    try {
+
+        welcomeAudio.currentTime = 0;
+        await welcomeAudio.play();
+
+    } catch (e) {
+
+        console.log(
+            "Не удалось воспроизвести приветствие",
+            e
+        );
+
+        window.dispatchEvent(
+            new Event(
+                "medoslavWelcomeFinished"
+            )
+        );
+    }
+
+});
 
 })();
 </script>
