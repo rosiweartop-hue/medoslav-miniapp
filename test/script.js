@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    if (window.__medoslavSoundReady) return;
+    window.__medoslavSoundReady = true;
+
     const soundButton = document.createElement("button");
     soundButton.id = "sound-toggle";
 
@@ -145,16 +148,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function startMusic() {
 
-        if (!soundOn) return;
-        if (welcomeWaiting) return;
+    if (!soundOn) return;
+    if (welcomeWaiting) return;
 
-        if (!backgroundMusic.paused)
-            return;
+    backgroundMusic.volume =
+        isColoringPage ? 0.16 : 0.11;
 
-        backgroundMusic
-            .play()
-            .catch(() => {});
-    }
+    if (!backgroundMusic.paused)
+        return;
+
+    backgroundMusic
+        .play()
+        .catch(() => {});
+}
 
     function stopMusic() {
 
