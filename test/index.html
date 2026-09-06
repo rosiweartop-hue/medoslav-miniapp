@@ -321,15 +321,10 @@ enterBtn.addEventListener("click", async () => {
             bgMusic.volume = 0;
 
             bgMusic.play()
-                .then(() => {
-                    bgMusic.pause();
-                    bgMusic.volume =
-                        normalVolume;
-                })
-                .catch(() => {
-                    bgMusic.volume =
-                        normalVolume;
-                });
+    .catch(() => {
+        bgMusic.volume =
+            normalVolume;
+    });
 
         } catch (e) {
             bgMusic.volume =
@@ -372,7 +367,22 @@ enterBtn.addEventListener("click", async () => {
     }
 
 });
+welcomeAudio.addEventListener("ended", () => {
 
+    const bgMusic =
+        window.medoBackgroundMusic;
+
+    if (bgMusic && soundIsEnabled()) {
+        bgMusic.volume = 0.11;
+    }
+
+    window.dispatchEvent(
+        new Event(
+            "medoslavWelcomeFinished"
+        )
+    );
+
+});
 })();
 </script>
 
