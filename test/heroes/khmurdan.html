@@ -206,7 +206,43 @@ border-radius:30px;
     border:none;
     ">
 </a>
+<!-- ЗВУК НА КНОПКЕ ВНУТРИ КАРТИНКИ -->
+<button
+    id="heroSoundButton"
+    type="button"
+    aria-label="Включить или выключить звук"
+    style="
+        position:absolute;
+        left:90.5%;
+        top:0.5%;
+        width:9%;
+        height:8.5%;
+        background:transparent !important;
+        border:none !important;
+        padding:0 !important;
+        margin:0 !important;
+        border-radius:50%;
+        z-index:100000;
+        cursor:pointer;
+        appearance:none;
+        -webkit-appearance:none;
+    ">
 
+    <span
+        id="heroSoundOffBadge"
+        style="
+            display:none;
+            position:absolute;
+            left:50%;
+            top:50%;
+            transform:translate(-50%, -50%);
+            font-size:28px;
+            line-height:1;
+            pointer-events:none;
+        ">
+        🔇
+    </span>
+</button>
 </div>
 
 
@@ -225,6 +261,54 @@ border-radius:30px;
 </main>
 
 <script src="../script.js"></script>
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const heroSoundButton =
+        document.getElementById("heroSoundButton");
+
+    const heroSoundOffBadge =
+        document.getElementById("heroSoundOffBadge");
+
+    const normalSoundButton =
+        document.getElementById("sound-toggle");
+
+    /* Убираем отдельную плавающую кнопку */
+    if (normalSoundButton) {
+        normalSoundButton.style.display = "none";
+    }
+
+    function updateHeroSoundButton() {
+
+        const soundOn =
+            window.medoSoundOn
+                ? window.medoSoundOn()
+                : localStorage.getItem("medoslavSound") !== "off";
+
+        if (heroSoundOffBadge) {
+            heroSoundOffBadge.style.display =
+                soundOn ? "none" : "block";
+        }
+    }
+
+    if (heroSoundButton) {
+
+        heroSoundButton.addEventListener("click", (e) => {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (normalSoundButton) {
+                normalSoundButton.click();
+            }
+
+            updateHeroSoundButton();
+        });
+    }
+
+    updateHeroSoundButton();
+});
+</script>
 </body>
 </html>
 
