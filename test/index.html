@@ -139,19 +139,40 @@ display:block;
     ">
 </button>
 
-<div
-    id="mapSoundOffBadge"
+<button
+    id="mapSoundButton"
+    type="button"
+    aria-label="Включить или выключить звук"
     style="
-        display:none;
         position:absolute;
-        left:91.5%;
-        top:1.4%;
-        z-index:10001;
-        font-size:32px;
-        pointer-events:none;
+        left:88.8%;
+        top:0.5%;
+        width:10.5%;
+        height:8.5%;
+        background:transparent;
+        border:none;
+        padding:0;
+        margin:0;
+        z-index:10000;
+        cursor:pointer;
     ">
-    🔇
-</div>
+
+    <span
+        id="mapSoundOffBadge"
+        style="
+            display:none;
+            position:absolute;
+            left:50%;
+            top:50%;
+            transform:translate(-50%, -50%);
+            font-size:32px;
+            line-height:1;
+            pointer-events:none;
+        ">
+        🔇
+    </span>
+
+</button>
 
 <a href="heroes/medoslav.html"
 aria-label="Дом Медослава"
